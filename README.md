@@ -18,7 +18,7 @@ Collection of configuration files that enable CI flows for Tinybird projects.
 
 ```
 
-include: "https://raw.githubusercontent.com/tinybird/ci/main/.gitlab/ci_branching.yaml"
+include: "https://raw.githubusercontent.com/tinybirdco/ci/main/.gitlab/ci_branching.yaml"
 
 .ci_variables:
   variables: &ci_variables
@@ -50,7 +50,7 @@ cleanup_ci:
 
 ```
  ci_branching:
-    uses: tinybird/ci/.github/workflows/ci_branching.yml@main
+    uses: tinybirdco/ci/.github/workflows/ci_branching.yml@main
     with:
       tb_host: <tinybird_api_endpoint_region_ie_https://api.tinybird.co>
     secrets: 
