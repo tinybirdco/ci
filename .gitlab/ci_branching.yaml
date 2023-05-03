@@ -1,0 +1,84 @@
+
+stages:
+  - ci
+  - cleanup
+
+variables:
+  PYTHON_VERSION: "3.11"
+  IMAGE_BASE: python:${PYTHON_VERSION}-slim-bullseye
+
+.run_ci:
+  stage: ci
+  image: ${IMAGE_BASE}
+  interruptible: true
+  script:
+    - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
+
+    # Create Python Virtual Environment
+    - python -m venv .venv
+    - source .venv/bin/activate
+
+    # Install Tinybird CLI
+    - pip install tinybird-cli
+
+    # Tinybird version
+    - tb --version
+
+    # Check all the data files syntax
+    - tb check
+
+    # Create new branch workspace with data
+    - |
+      tb \
+        --host $TB_HOST \
+        --token $ADMIN_TOKEN \
+        branch create tmp_ci_${CI_COMMIT_SHORT_SHA} \
+        --last-partition --wait
+
+    # List changes with main branch
+    - tb diff --main --no-verbose
+
+    # Push changes to the branch workspace
+    - |
+      PUSH_FILE=./deployment/${CI_COMMIT_REF_NAME}-push.sh
+      if [ -f "$PUSH_FILE" ]; then
+        ./deployment/${CI_COMMIT_REF_NAME}-push.sh
+      else
+        tb push --push-deps --only-changes --force --populate --wait
+      fi
+
+    # List changes with branch (should be empty)
+    - tb diff
+
+    # Run data quality tests
+    - tb test run -v
+
+    # Run pipe regression tests
+    - |
+      echo ${CI_MERGE_REQUEST_LABELS}
+      tb branch regression-tests coverage --wait $(echo ${CI_MERGE_REQUEST_LABELS} | tr , ' ')
+
+
+.cleanup_ci_branch:
+  stage: cleanup
+  image: ${IMAGE_BASE}
+  script:
+    - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
+
+    # Create Python Virtual Environment
+    - python -m venv .venv
+    - source .venv/bin/activate
+
+    # Install Tinybird CLI
+    - pip install tinybird-cli
+
+    # Tinybird version
+    - tb --version
+
+    # Create new branch workspace with data
+    - |
+      tb \
+      --host $TB_HOST \
+      --token $ADMIN_TOKEN \
+      branch rm tmp_ci_${CI_COMMIT_SHORT_SHA} \
+      --yes
