@@ -27,18 +27,18 @@ variables:
     # Check all the data files syntax
     - tb check
 
-    # Create new branch workspace with data
+    # Create new test Environment with data
     - |
       tb \
         --host $TB_HOST \
         --token $ADMIN_TOKEN \
-        branch create tmp_ci_${CI_COMMIT_SHORT_SHA} \
+        env create tmp_ci_${CI_COMMIT_SHORT_SHA} \
         --last-partition --wait
 
-    # List changes with main branch
-    - tb diff --main --no-verbose
+    # List changes with production Workspace
+    - tb diff --production --no-verbose
 
-    # Push changes to the branch workspace
+    # Push changes to the test Environment
     - |
       PUSH_FILE=./deployment/${CI_COMMIT_REF_NAME}-push.sh
       if [ -f "$PUSH_FILE" ]; then
@@ -47,7 +47,7 @@ variables:
         tb push --push-deps --only-changes --force --populate --wait
       fi
 
-    # List changes with branch (should be empty)
+    # List changes with test Environment (should be empty)
     - tb diff
 
     # Run data quality tests
@@ -56,7 +56,7 @@ variables:
     # Run pipe regression tests
     - |
       echo ${CI_MERGE_REQUEST_LABELS}
-      tb branch regression-tests coverage --wait $(echo ${CI_MERGE_REQUEST_LABELS} | tr , ' ')
+      tb env regression-tests coverage --wait $(echo ${CI_MERGE_REQUEST_LABELS} | tr , ' ')
 
 
 .cleanup_ci_branch:
@@ -75,10 +75,10 @@ variables:
     # Tinybird version
     - tb --version
 
-    # Create new branch workspace with data
+    # Remove test Environment
     - |
       tb \
       --host $TB_HOST \
       --token $ADMIN_TOKEN \
-      branch rm tmp_ci_${CI_COMMIT_SHORT_SHA} \
+      env rm tmp_ci_${CI_COMMIT_SHORT_SHA} \
       --yes
