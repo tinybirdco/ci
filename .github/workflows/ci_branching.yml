@@ -1,5 +1,5 @@
 
-name: Tinybird ci with branching
+name: Tinybird CI with branching
 
 on:
   workflow_call:
@@ -37,17 +37,18 @@ jobs:
       - name: Check all the data files syntax
         run: tb check  
 
-      - name: Create new branch workspace with data
+      - name: Create new test Environment with data
         run: |
           tb \
           --host ${{ inputs.tb_host }} \
           --token ${{ secrets.admin_token }} \
-          branch create tmp_ci_${GITHUB_RUN_ID} \
+          env create tmp_ci_${GITHUB_RUN_ID} \
           --last-partition --wait
-      - name: List changes with main branch
-        run: tb diff --main --no-verbose
 
-      - name: Push changes to the branch workspace
+      - name: List changes with production Workspace
+        run: tb diff --production --no-verbose
+
+      - name: Push changes to the test Environment
         run: |
           PUSH_FILE=./deployment/${{env.GIT_BRANCH}}-push.sh
           if [ -f "$PUSH_FILE" ]; then
@@ -55,12 +56,14 @@ jobs:
           else
             tb push --push-deps --only-changes --force --populate --wait
           fi
-      - name: List changes with branch (should be empty)
+
+      - name: List changes with test Environment (should be empty)
         run: tb diff
 
       - name: Run data quality tests
         run: |
           tb test run -v
+
       - name: Get regression labels
         id: regression_labels
         uses: SamirMarin/get-labels-action@v0
@@ -72,7 +75,7 @@ jobs:
         run: |
           REGRESSION_FILE=./deployment/${{env.GIT_BRANCH}}-regression.yaml
           echo ${{ steps.regression_labels.outputs.labels }}
-          tb branch regression-tests coverage --wait $(echo ${{ steps.regression_labels.outputs.labels }} | tr , ' ')
+          tb env regression-tests coverage --wait $(echo ${{ steps.regression_labels.outputs.labels }} | tr , ' ')
   cleanup:
     runs-on: ubuntu-latest
     if: ${{ always() }}
@@ -90,10 +93,10 @@ jobs:
       - name: Tinybird version
         run: tb --version       
 
-      - name: Drop CI branch workspace
+      - name: Drop test Environment
         run: |
           tb \
           --host ${{ inputs.tb_host }} \
           --token ${{ secrets.admin_token }} \
-          branch rm tmp_ci_${GITHUB_RUN_ID} \
+          env rm tmp_ci_${GITHUB_RUN_ID} \
           --yes
