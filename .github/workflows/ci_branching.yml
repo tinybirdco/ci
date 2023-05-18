@@ -3,12 +3,10 @@ name: Tinybird CI with branching
 
 on:
   workflow_call:
-    inputs:
-      tb_host:
-        required: true
-        type: string
     secrets:
       admin_token:
+        required: true
+      tb_host:
         required: true
 
 jobs:
