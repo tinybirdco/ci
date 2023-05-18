@@ -38,7 +38,7 @@ jobs:
       - name: Create new test Environment with data
         run: |
           tb \
-          --host ${{ inputs.tb_host }} \
+          --host ${{ secrets.tb_host }} \
           --token ${{ secrets.admin_token }} \
           env create tmp_ci_${GITHUB_RUN_ID} \
           --last-partition --wait
@@ -94,7 +94,7 @@ jobs:
       - name: Drop test Environment
         run: |
           tb \
-          --host ${{ inputs.tb_host }} \
+          --host ${{ secrets.tb_host }} \
           --token ${{ secrets.admin_token }} \
           env rm tmp_ci_${GITHUB_RUN_ID} \
           --yes
