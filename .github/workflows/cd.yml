@@ -1,9 +1,6 @@
-name: name: Tinybird CD with versioning
+name: Tinybird CD with versioning
 
 on:
-  push:
-    branches:
-    - main
   workflow_call:
     secrets:
       admin_token:
