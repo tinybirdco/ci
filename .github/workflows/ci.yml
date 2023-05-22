@@ -43,6 +43,12 @@ jobs:
           env create tmp_ci_${GITHUB_RUN_ID} \
           --last-partition --wait
 
+      - name: Use environment token
+        run: |
+          ENV_TOKEN="$(cat .tinyb | jq -r '.token')"
+          echo "::add-mask::$ENV_TOKEN"
+          echo "TB_TOKEN=$ENV_TOKEN" >> $GITHUB_ENV
+
       - name: List changes with production Workspace
         run: tb diff --production --no-verbose
 
@@ -52,11 +58,14 @@ jobs:
           if [ -f "$PUSH_FILE" ]; then
             ./deployment/${{env.GIT_BRANCH}}-push.sh
           else
-            tb push --push-deps --only-changes --force --populate --wait
+            tb push --push-deps --only-changes --fixtures --force --populate --wait
           fi
 
       - name: List changes with test Environment (should be empty)
         run: tb diff
+
+      - name: Run fixture tests
+        run: ./scripts/exec_test.sh
 
       - name: Run data quality tests
         run: |
