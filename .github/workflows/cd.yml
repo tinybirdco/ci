@@ -1,0 +1,51 @@
+name: name: Tinybird CD with versioning
+
+on:
+  push:
+    branches:
+    - main
+  workflow_call:
+    secrets:
+      admin_token:
+        required: true
+      tb_host:
+        required: true
+
+jobs:
+  push_changes:
+    runs-on: ubuntu-latest
+    name: Push changes to Workspace
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.8"
+          architecture: "x64"
+      - name: Set environment variables
+        run: |
+          GIT_BRANCH=${GITHUB_HEAD_REF}
+          echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+      - name: Install Tinybird CLI
+        run: pip install tinybird-cli
+      - name: Tinybird version
+        run: tb --version
+      - name: Check all the data files syntax
+        run: tb check
+      - name: Authenticate
+        run: |
+          tb auth \
+          --host ${{ secrets.tb_host }} \
+          --token ${{ secrets.admin_token }} \
+      - name: List changes with Workspace
+        run: tb diff --no-verbose
+      - name: Push changes to Workspace
+        run: |
+            PUSH_FILE=./deployment/${{env.GIT_BRANCH}}-push.sh
+            if [ -f "$PUSH_FILE" ]; then
+              ./deployment/${{env.GIT_BRANCH}}-push.sh
+            else
+              tb push --push-deps --only-changes --force --populate --wait
+            fi
+      - name: List changes with Workspace (should be empty)
+        run: tb diff
