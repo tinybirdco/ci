@@ -1,0 +1,47 @@
+stages:
+  - cd
+
+variables:
+  PYTHON_VERSION: "3.11"
+  IMAGE_BASE: python:${PYTHON_VERSION}-slim-bullseye
+
+.run_cd:
+  stage: cd
+  image: ${IMAGE_BASE}
+  interruptible: true
+  script:
+    - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
+
+    # Create Python Virtual Environment
+    - python -m venv .venv
+    - source .venv/bin/activate
+
+    # Install Tinybird CLI
+    - pip install tinybird-cli
+
+    # Tinybird version
+    - tb --version
+
+    # Check all the data files syntax
+    - tb check
+
+    # Auth in the main Workspace
+    - |
+      tb auth \
+      --host ${{ secrets.tb_host }} \
+      --token ${{ secrets.admin_token }} \
+
+    # List changes with main Workspace
+    - tb diff --no-verbose
+
+    # Push changes to the main Workspace
+    - |
+      PUSH_FILE=./deployment/${CI_COMMIT_REF_NAME}-push.sh
+      if [ -f "$PUSH_FILE" ]; then
+        ./deployment/${CI_COMMIT_REF_NAME}-push.sh
+      else
+        tb push --push-deps --only-changes --force --populate --wait
+      fi
+
+    # List changes with main Workspace (should be empty)
+    - tb diff
