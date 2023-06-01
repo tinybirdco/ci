@@ -107,8 +107,8 @@ variables:
     # Auth in the main Workspace
     - |
       tb auth \
-      --host ${{ secrets.tb_host }} \
-      --token ${{ secrets.admin_token }} \
+      --host $TB_HOST \
+      --token $ADMIN_TOKEN
 
     # List changes with main Workspace
     - tb diff --no-verbose
