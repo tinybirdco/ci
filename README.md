@@ -18,7 +18,7 @@ Collection of configuration files that enable CI flows for Tinybird projects.
 
 ```
 
-include: "https://raw.githubusercontent.com/tinybirdco/ci/main/.gitlab/ci_branching.yaml"
+include: "https://raw.githubusercontent.com/tinybirdco/ci/main/.gitlab/ci_cd.yaml"
 
 .ci_config_rules:
   - &ci_config_rule
@@ -41,7 +41,7 @@ include: "https://raw.githubusercontent.com/tinybirdco/ci/main/.gitlab/ci_branch
     if: $CI_COMMIT_BRANCH == '$CI_DEFAULT_BRANCH' && $CI_PIPELINE_SOURCE == 'merge_request_event'
 
 .cd_variables:
-  variables: &ci_variables
+  variables: &cd_variables
     TB_HOST: "<tinybird_api_endpoint_region_ie_https://api.tinybird.co>"
     ADMIN_TOKEN: "<tinybird_admin_token>"
     DATA_PROJECT_DIR: "<your_data_project_directory>"
