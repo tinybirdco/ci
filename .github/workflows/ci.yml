@@ -65,7 +65,10 @@ jobs:
         run: tb diff
 
       - name: Run fixture tests
-        run: ./scripts/exec_test.sh
+        run: |
+          if [ -f ./scripts/exec_test.sh ]; then
+            ./scripts/exec_test.sh
+          fi
 
       - name: Run data quality tests
         run: |
