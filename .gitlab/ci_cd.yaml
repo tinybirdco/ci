@@ -33,7 +33,7 @@ variables:
       tb \
         --host $TB_HOST \
         --token $ADMIN_TOKEN \
-        env create tmp_ci_${CI_COMMIT_SHORT_SHA} \
+        env create tmp_ci_${DATA_PROJECT_DIR}_${CI_COMMIT_SHORT_SHA} \
         --last-partition --wait
 
     # List changes with production Workspace
@@ -81,7 +81,7 @@ variables:
       tb \
       --host $TB_HOST \
       --token $ADMIN_TOKEN \
-      env rm tmp_ci_${CI_COMMIT_SHORT_SHA} \
+      env rm tmp_ci_${DATA_PROJECT_DIR}_${CI_COMMIT_SHORT_SHA} \
       --yes
 
 .run_cd:
