@@ -13,6 +13,7 @@ variables:
   image: ${IMAGE_BASE}
   interruptible: true
   script:
+    - _DATA_SNAPSHOT="${DATA_SNAPSHOT:=--last-partition}"
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
 
     # Create Python Virtual Environment
@@ -34,7 +35,7 @@ variables:
         --host $TB_HOST \
         --token $ADMIN_TOKEN \
         env create tmp_ci_${DATA_PROJECT_DIR}_${CI_COMMIT_SHORT_SHA} \
-        --last-partition --wait
+        ${_DATA_SNAPSHOT} --wait
 
     # List changes with production Workspace
     - tb diff --production --no-verbose
