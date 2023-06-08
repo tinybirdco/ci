@@ -15,7 +15,7 @@ variables:
   script:
     - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
-    - _NORMALIZED_ENV_NAME=echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev
+    - _NORMALIZED_ENV_NAME=`echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev`
 
     # Create Python Virtual Environment
     - python -m venv .venv
@@ -67,7 +67,7 @@ variables:
   image: ${IMAGE_BASE}
   script:
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
-    - _NORMALIZED_ENV_NAME=echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev
+    - _NORMALIZED_ENV_NAME=`echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev`
 
     # Create Python Virtual Environment
     - python -m venv .venv
