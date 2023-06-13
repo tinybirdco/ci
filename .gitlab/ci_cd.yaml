@@ -57,11 +57,10 @@ variables:
     - tb test run -v
 
     # Run pipe regression tests
-    - |
-      echo ${CI_MERGE_REQUEST_LABELS}
-      REGRESSION_LABELS=$(echo "${CI_MERGE_REQUEST_LABELS}" | tr ',' '\n' | grep '^--' | paste -sd ',')
-      echo ${REGRESSION_LABELS}
-      tb env regression-tests coverage --wait $(echo ${REGRESSION_LABELS} | tr , ' ')
+    - echo ${CI_MERGE_REQUEST_LABELS}
+    - REGRESSION_LABELS=$(echo "${CI_MERGE_REQUEST_LABELS}" | tr ',' "\n" | grep -e '^--' -e '^$' | paste -sd ',' -)
+    - echo ${REGRESSION_LABELS}
+    - tb env regression-tests coverage --wait $(echo ${REGRESSION_LABELS} | tr , ' ')
 
 
 .cleanup_ci_branch:
