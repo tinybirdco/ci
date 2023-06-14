@@ -25,6 +25,7 @@ jobs:
       - name: Set environment variables
         run: |
           _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
+          _NORMALIZED_ENV_NAME=`echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev`
           GIT_BRANCH=${GITHUB_HEAD_REF}
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
       - name: Install Tinybird CLI
@@ -41,7 +42,7 @@ jobs:
           tb \
           --host ${{ secrets.tb_host }} \
           --token ${{ secrets.admin_token }} \
-          env create tmp_ci_${GITHUB_RUN_ID} \
+          env create tmp_ci_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
           ${_ENV_FLAGS}
 
       - name: Use environment token
@@ -86,7 +87,9 @@ jobs:
         run: |
           REGRESSION_FILE=./deployment/${{env.GIT_BRANCH}}-regression.yaml
           echo ${{ steps.regression_labels.outputs.labels }}
-          tb env regression-tests coverage --wait $(echo ${{ steps.regression_labels.outputs.labels }} | tr , ' ')
+          REGRESSION_LABELS=$(echo "${{ steps.regression_labels.outputs.labels }}" | awk -F, '{for (i=1; i<=NF; i++) if ($i ~ /^--/) print $i}' ORS=',' | sed 's/,$//')
+          echo ${REGRESSION_LABELS}
+          tb env regression-tests coverage --wait $(echo ${REGRESSION_LABELS} | tr , ' ')
   cleanup:
     runs-on: ubuntu-latest
     if: ${{ always() }}
@@ -109,5 +112,5 @@ jobs:
           tb \
           --host ${{ secrets.tb_host }} \
           --token ${{ secrets.admin_token }} \
-          env rm tmp_ci_${GITHUB_RUN_ID} \
+          env rm tmp_ci_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
           --yes
