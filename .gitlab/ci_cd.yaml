@@ -14,7 +14,7 @@ variables:
   interruptible: true
   script:
     - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
-    - _CD_POPULATE="${CD_POPULATE:= }"
+    - _CD_POPULATE="${CD_POPULATE:=--populate --wait}"
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
     - _NORMALIZED_ENV_NAME=`echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev`
 
@@ -130,7 +130,7 @@ variables:
       if [ -f "$PUSH_FILE" ]; then
         ./deployment/${CI_COMMIT_REF_NAME}-push.sh
       else
-        tb push --push-deps --only-changes --force ${_CD_POPULATE} --wait
+        tb push --push-deps --only-changes --force ${_CD_POPULATE}
       fi
 
     # List changes with main Workspace (should be empty)
