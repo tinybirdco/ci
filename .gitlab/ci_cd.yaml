@@ -48,7 +48,11 @@ variables:
       if [ -f "$PUSH_FILE" ]; then
         ./deployment/${CI_COMMIT_REF_NAME}-push.sh
       else
-        tb push --push-deps --only-changes --force ${_CI_POPULATE}
+        if $TB_DEPLOY; then
+          tb deploy --populate --wait
+        else
+          tb push --push-deps --only-changes --fixtures --force ${_CI_POPULATE}
+        fi
       fi
 
     # List changes with test Environment (should be empty)
@@ -130,7 +134,15 @@ variables:
       if [ -f "$PUSH_FILE" ]; then
         ./deployment/${CI_COMMIT_REF_NAME}-push.sh
       else
+<<<<<<< HEAD
         tb push --push-deps --only-changes --force ${_CD_POPULATE}
+=======
+        if $TB_DEPLOY; then
+          tb deploy --populate --wait
+        else
+          tb push --push-deps --only-changes --fixtures --force --populate --wait
+        fi
+>>>>>>> da448fe (parametrize cicd to allow tb deploy command)
       fi
 
     # List changes with main Workspace (should be empty)

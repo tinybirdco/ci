@@ -3,6 +3,12 @@ name: Tinybird CI with branching
 
 on:
   workflow_call:
+    inputs:
+      tb_deploy:
+        description: "use tb deploy based on git releases"
+        required: false
+        type: boolean
+        default: false
     secrets:
       admin_token:
         required: true
@@ -17,6 +23,9 @@ jobs:
         working-directory: ./
     steps:
       - uses: actions/checkout@master
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
       - uses: actions/setup-python@v3
         with:
           python-version: "3.8"
@@ -60,7 +69,11 @@ jobs:
           if [ -f "$PUSH_FILE" ]; then
             ./deployment/${{env.GIT_BRANCH}}-push.sh
           else
-            tb push --push-deps --only-changes --fixtures --force --populate --wait
+            if ${{ inputs.tb_deploy}}; then
+              tb deploy --populate --wait
+            else
+              tb push --push-deps --only-changes --fixtures --force --populate --wait
+            fi
           fi
 
       - name: List changes with test Environment (should be empty)
