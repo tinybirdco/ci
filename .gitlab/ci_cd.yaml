@@ -48,7 +48,7 @@ variables:
       if [ -f "$PUSH_FILE" ]; then
         ./deployment/${CI_COMMIT_REF_NAME}-push.sh
       else
-        tb push --push-deps --only-changes --force ${_CI_POPULATE} --wait
+        tb push --push-deps --only-changes --force ${_CI_POPULATE}
       fi
 
     # List changes with test Environment (should be empty)
