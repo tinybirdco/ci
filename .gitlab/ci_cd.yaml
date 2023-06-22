@@ -134,15 +134,11 @@ variables:
       if [ -f "$PUSH_FILE" ]; then
         ./deployment/${CI_COMMIT_REF_NAME}-push.sh
       else
-<<<<<<< HEAD
-        tb push --push-deps --only-changes --force ${_CD_POPULATE}
-=======
         if $TB_DEPLOY; then
-          tb deploy --populate --wait
+          tb deploy --populate --fixtures --wait
         else
-          tb push --push-deps --only-changes --fixtures --force --populate --wait
+          tb push --push-deps --only-changes --fixtures --force ${_CD_POPULATE}
         fi
->>>>>>> da448fe (parametrize cicd to allow tb deploy command)
       fi
 
     # List changes with main Workspace (should be empty)

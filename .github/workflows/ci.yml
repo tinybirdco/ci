@@ -70,7 +70,7 @@ jobs:
             ./deployment/${{env.GIT_BRANCH}}-push.sh
           else
             if ${{ inputs.tb_deploy}}; then
-              tb deploy --populate --wait
+              tb deploy --populate --fixtures --wait
             else
               tb push --push-deps --only-changes --fixtures --force --populate --wait
             fi
