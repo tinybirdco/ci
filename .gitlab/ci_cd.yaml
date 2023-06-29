@@ -14,9 +14,9 @@ variables:
   interruptible: true
   script:
     - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
-    - _CI_POPULATE="${CI_POPULATE:=--populate --wait}"
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
     - _NORMALIZED_ENV_NAME=`echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev`
+    - source .tinyenv
 
     # Create Python Virtual Environment
     - python -m venv .venv
@@ -44,15 +44,12 @@ variables:
 
     # Push changes to the test Environment
     - |
-      PUSH_FILE=./deployment/${CI_COMMIT_REF_NAME}-push.sh
-      if [ -f "$PUSH_FILE" ]; then
-        ./deployment/${CI_COMMIT_REF_NAME}-push.sh
+      CI_DEPLOY_FILE=./deployment/${VERSION}/ci-deploy.sh
+      if [ -f "$CI_DEPLOY_FILE" ]; then
+        ./deployment/${VERSION}/ci-deploy.sh
       else
-        if $TB_DEPLOY; then
-          tb deploy --populate --wait
-        else
-          tb push --push-deps --only-changes --fixtures --force ${_CI_POPULATE}
-        fi
+        # FIXME add --semver
+        tb deploy --populate --wait
       fi
 
     # List changes with test Environment (should be empty)
@@ -72,6 +69,62 @@ variables:
     - echo ${REGRESSION_LABELS}
     - tb env regression-tests coverage --wait $(echo ${REGRESSION_LABELS} | tr , ' ')
 
+.run_cd:
+  stage: cd
+  image: ${IMAGE_BASE}
+  interruptible: true
+  script:
+    - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
+    - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
+    - _NORMALIZED_ENV_NAME=`echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev`
+    - source .tinyenv
+
+    # Create Python Virtual Environment
+    - python -m venv .venv
+    - source .venv/bin/activate
+
+    # Install Tinybird CLI
+    - pip install tinybird-cli
+
+    # Tinybird version
+    - tb --version
+
+    # Check all the data files syntax
+    - tb check
+
+    # Create new test Environment with data
+    - |
+      tb \
+        --host $TB_HOST \
+        --token $ADMIN_TOKEN \
+        env create tmp_ci_${_NORMALIZED_ENV_NAME}_${CI_COMMIT_SHORT_SHA} \
+        ${_ENV_FLAGS}
+
+    # List changes with production Workspace
+    - tb diff --production --no-verbose
+
+    # Push changes to the test Environment
+    - |
+      CI_DEPLOY_FILE=./deployment/${VERSION}/ci-deploy.sh
+      if [ -f "$CI_DEPLOY_FILE" ]; then
+        ./deployment/${VERSION}/ci-deploy.sh
+      else
+        tb deploy --populate --wait
+      fi
+
+    # List changes with test Environment (should be empty)
+    - tb diff
+
+    # Deploy changes to the main Workspace
+    - |
+      tb env deploy --semver ${VERSION} --wait
+      tb release ls
+
+    # OPTIONALLY run post CD deploy commands (e.g.: tb pipe populate)
+    - |
+      CD_DEPLOY_FILE=./deployment/${VERSION}/cd-deploy.sh
+      if [ -f "$CD_DEPLOY_FILE" ]; then
+        ./deployment/${VERSION}/cd-deploy.sh
 
 .cleanup_ci_branch:
   stage: cleanup
@@ -97,49 +150,3 @@ variables:
       --token $ADMIN_TOKEN \
       env rm tmp_ci_${_NORMALIZED_ENV_NAME}_${CI_COMMIT_SHORT_SHA} \
       --yes
-
-.run_cd:
-  stage: cd
-  image: ${IMAGE_BASE}
-  interruptible: true
-  script:
-    - _CD_POPULATE="${CD_POPULATE:= }"
-    - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
-
-    # Create Python Virtual Environment
-    - python -m venv .venv
-    - source .venv/bin/activate
-
-    # Install Tinybird CLI
-    - pip install tinybird-cli
-
-    # Tinybird version
-    - tb --version
-
-    # Check all the data files syntax
-    - tb check
-
-    # Auth in the main Workspace
-    - |
-      tb auth \
-      --host $TB_HOST \
-      --token $ADMIN_TOKEN
-
-    # List changes with main Workspace
-    - tb diff --no-verbose
-
-    # Push changes to the main Workspace
-    - |
-      PUSH_FILE=./deployment/${CI_COMMIT_REF_NAME}-push.sh
-      if [ -f "$PUSH_FILE" ]; then
-        ./deployment/${CI_COMMIT_REF_NAME}-push.sh
-      else
-        if $TB_DEPLOY; then
-          tb deploy --populate --wait
-        else
-          tb push --push-deps --only-changes --force ${_CD_POPULATE}
-        fi
-      fi
-
-    # List changes with main Workspace (should be empty)
-    - tb diff
