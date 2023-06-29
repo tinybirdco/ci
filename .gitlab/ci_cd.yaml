@@ -44,9 +44,9 @@ variables:
 
     # Push changes to the test Environment
     - |
-      CI_DEPLOY_FILE=./deployment/${VERSION}/ci-deploy.sh
+      CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
       if [ -f "$CI_DEPLOY_FILE" ]; then
-        ./deployment/${VERSION}/ci-deploy.sh
+        ./deploy/${VERSION}/ci-deploy.sh
       else
         # FIXME add --semver
         tb deploy --populate --wait
@@ -105,9 +105,9 @@ variables:
 
     # Push changes to the test Environment
     - |
-      CI_DEPLOY_FILE=./deployment/${VERSION}/ci-deploy.sh
+      CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
       if [ -f "$CI_DEPLOY_FILE" ]; then
-        ./deployment/${VERSION}/ci-deploy.sh
+        ./deploy/${VERSION}/ci-deploy.sh
       else
         tb deploy --populate --wait
       fi
@@ -122,9 +122,9 @@ variables:
 
     # OPTIONALLY run post CD deploy commands (e.g.: tb pipe populate)
     - |
-      CD_DEPLOY_FILE=./deployment/${VERSION}/cd-deploy.sh
+      CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
       if [ -f "$CD_DEPLOY_FILE" ]; then
-        ./deployment/${VERSION}/cd-deploy.sh
+        ./deploy/${VERSION}/cd-deploy.sh
 
 .cleanup_ci_branch:
   stage: cleanup
