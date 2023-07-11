@@ -23,7 +23,7 @@ variables:
     - source .venv/bin/activate
 
     # Install Tinybird CLI
-    - pip install https://storage.googleapis.com/dev-alrocar-public/tinybird_cli-1.0.0b357-py3-none-any.whl
+    - pip install tinybird-cli
 
     # Tinybird version
     - tb --version
@@ -84,7 +84,7 @@ variables:
     - source .venv/bin/activate
 
     # Install Tinybird CLI
-    - pip install https://storage.googleapis.com/dev-alrocar-public/tinybird_cli-1.0.0b357-py3-none-any.whl
+    - pip install tinybird-cli
 
     # Tinybird version
     - tb --version
@@ -139,7 +139,7 @@ variables:
     - source .venv/bin/activate
 
     # Install Tinybird CLI
-    - pip install https://storage.googleapis.com/dev-alrocar-public/tinybird_cli-1.0.0b357-py3-none-any.whl
+    - pip install tinybird-cli
 
     # Tinybird version
     - tb --version
