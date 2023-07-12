@@ -97,7 +97,7 @@ variables:
       tb \
         --host $TB_HOST \
         --token $ADMIN_TOKEN \
-        env create tmp_ci_${_NORMALIZED_ENV_NAME}_${CI_COMMIT_SHORT_SHA} \
+        env create tmp_cd_${_NORMALIZED_ENV_NAME}_${CI_COMMIT_SHORT_SHA} \
         ${_ENV_FLAGS}
 
     # List changes with production Workspace
@@ -150,4 +150,29 @@ variables:
       --host $TB_HOST \
       --token $ADMIN_TOKEN \
       env rm tmp_ci_${_NORMALIZED_ENV_NAME}_${CI_COMMIT_SHORT_SHA} \
+      --yes
+
+.cleanup_cd_branch:
+  stage: cleanup
+  image: ${IMAGE_BASE}
+  script:
+    - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
+    - _NORMALIZED_ENV_NAME=`echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev`
+
+    # Create Python Virtual Environment
+    - python -m venv .venv
+    - source .venv/bin/activate
+
+    # Install Tinybird CLI
+    - pip install tinybird-cli
+
+    # Tinybird version
+    - tb --version
+
+    # Remove test Environment
+    - |
+      tb \
+      --host $TB_HOST \
+      --token $ADMIN_TOKEN \
+      env rm tmp_cd_${_NORMALIZED_ENV_NAME}_${CI_COMMIT_SHORT_SHA} \
       --yes
