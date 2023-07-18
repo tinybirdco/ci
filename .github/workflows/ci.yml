@@ -100,7 +100,6 @@ jobs:
 
       - name: Run pipe regression tests
         run: |
-          REGRESSION_FILE=./deployment/${{env.GIT_BRANCH}}-regression.yaml
           echo ${{ steps.regression_labels.outputs.labels }}
           REGRESSION_LABELS=$(echo "${{ steps.regression_labels.outputs.labels }}" | awk -F, '{for (i=1; i<=NF; i++) if ($i ~ /^--/) print $i}' ORS=',' | sed 's/,$//')
           echo ${REGRESSION_LABELS}
