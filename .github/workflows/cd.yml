@@ -52,9 +52,9 @@ jobs:
               ./deployment/${{env.GIT_BRANCH}}-push.sh
             else
               if ${{ inputs.tb_deploy}}; then
-                tb deploy --populate --fixtures --wait
+                tb deploy --populate --wait
               else
-                tb push --push-deps --only-changes --fixtures --force --populate --wait
+                tb push --push-deps --only-changes --force --populate --wait
               fi
             fi
       - name: List changes with Workspace (should be empty)
