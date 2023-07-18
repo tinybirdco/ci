@@ -56,6 +56,7 @@ jobs:
         run: tb diff --no-verbose
       - name: Push changes to Workspace
         run: |
+            source .tinyenv
             CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
             if [ -f "$CI_DEPLOY_FILE" ]; then
               ./deploy/${VERSION}/ci-deploy.sh
@@ -70,6 +71,7 @@ jobs:
             tb release ls
       - name: run post CD deploy commands
         run: |
+            source .tinyenv
             CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
             if [ -f "$CD_DEPLOY_FILE" ]; then
               ./deploy/${VERSION}/cd-deploy.sh

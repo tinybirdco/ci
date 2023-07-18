@@ -71,6 +71,7 @@ jobs:
 
       - name: Push changes to the test Environment
         run: |
+          source .tinyenv
           CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
           if [ -f "$CI_DEPLOY_FILE" ]; then
             ./deploy/${VERSION}/ci-deploy.sh
