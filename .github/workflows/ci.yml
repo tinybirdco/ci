@@ -77,6 +77,7 @@ jobs:
           else
             # FIXME add --semver
             tb deploy --populate --wait
+          fi
 
       - name: List changes with test Environment (should be empty)
         run: tb diff
