@@ -117,7 +117,7 @@ variables:
 
     # Deploy changes to the main Workspace
     - |
-      if ${TB_DEPLOY}; then
+      if [ "$TB_DEPLOY" = "true" ]; then
         tb env deploy --semver ${VERSION} --wait
         tb release ls
       else
