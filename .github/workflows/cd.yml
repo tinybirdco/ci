@@ -1,4 +1,4 @@
-name: Tinybird CD with versioning
+name: Tinybird CD
 
 on:
   workflow_call:
@@ -38,6 +38,8 @@ jobs:
           architecture: "x64"
       - name: Set environment variables
         run: |
+          _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
+          _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
           GIT_BRANCH=${GITHUB_HEAD_REF}
           source .tinyenv
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
@@ -51,16 +53,18 @@ jobs:
       - name: Check all the data files syntax
         run: tb check
 
-      - name: Authenticate
+      - name: Create new test Environment with data
         run: |
-          tb auth \
-          --host ${{ secrets.tb_host }} \
-          --token ${{ secrets.admin_token }} \
+            tb \
+              --host $TB_HOST \
+              --token $ADMIN_TOKEN \
+              env create tmp_cd_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
+              ${_ENV_FLAGS}
 
-      - name: List changes with Workspace
-        run: tb diff --no-verbose
+      - name: List changes with Workspace (should be empty)
+        run: tb diff --production --no-verbose
 
-      - name: Push changes to Workspace
+      - name: Push changes to the test Environment
         run: |
             source .tinyenv
             CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
@@ -70,7 +74,7 @@ jobs:
               tb deploy --populate --fixtures --wait
             fi
 
-      - name: List changes with Workspace (should be empty)
+      - name: List changes with test Environment (should be empty)
         run: tb diff
 
       - name: Deploy changes to the main Workspace

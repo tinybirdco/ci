@@ -15,7 +15,7 @@ variables:
   script:
     - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
-    - _NORMALIZED_ENV_NAME=`echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev`
+    _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
     - source .tinyenv
 
     # Create Python Virtual Environment
@@ -76,7 +76,7 @@ variables:
   script:
     - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
-    - _NORMALIZED_ENV_NAME=`echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev`
+    _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
     - source .tinyenv
 
     # Create Python Virtual Environment
@@ -109,7 +109,7 @@ variables:
       if [ -f "$CI_DEPLOY_FILE" ]; then
         ./deploy/${VERSION}/ci-deploy.sh
       else
-        tb deploy --populate --wait
+        tb deploy --populate --fixtures --wait
       fi
 
     # List changes with test Environment (should be empty)

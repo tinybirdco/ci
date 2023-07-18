@@ -1,5 +1,5 @@
 
-name: Tinybird CI with branching
+name: Tinybird CI
 
 on:
   workflow_call:
@@ -34,7 +34,7 @@ jobs:
       - name: Set environment variables
         run: |
           _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
-          _NORMALIZED_ENV_NAME=`echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev`
+          _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
           GIT_BRANCH=${GITHUB_HEAD_REF}
           source .tinyenv
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
