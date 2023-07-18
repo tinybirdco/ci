@@ -41,19 +41,25 @@ jobs:
           GIT_BRANCH=${GITHUB_HEAD_REF}
           source .tinyenv
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+
       - name: Install Tinybird CLI
         run: pip install tinybird-cli
+
       - name: Tinybird version
         run: tb --version
+
       - name: Check all the data files syntax
         run: tb check
+
       - name: Authenticate
         run: |
           tb auth \
           --host ${{ secrets.tb_host }} \
           --token ${{ secrets.admin_token }} \
+
       - name: List changes with Workspace
         run: tb diff --no-verbose
+
       - name: Push changes to Workspace
         run: |
             source .tinyenv
@@ -61,14 +67,25 @@ jobs:
             if [ -f "$CI_DEPLOY_FILE" ]; then
               ./deploy/${VERSION}/ci-deploy.sh
             else
-              tb deploy --populate --wait
+              tb deploy --populate --fixtures --wait
             fi
+
       - name: List changes with Workspace (should be empty)
         run: tb diff
+
       - name: Deploy changes to the main Workspace
         run: |
-            tb env deploy --semver ${VERSION} --wait
-            tb release ls
+            if ${{ inputs.tb_deploy}}; then
+              tb env deploy --semver ${VERSION} --wait
+              tb release ls
+            else
+              CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
+              if [! -f "$CD_DEPLOY_FILE" ]; then
+                tb deploy
+              fi
+            fi
+          fi
+
       - name: run post CD deploy commands
         run: |
             source .tinyenv
@@ -76,5 +93,6 @@ jobs:
             if [ -f "$CD_DEPLOY_FILE" ]; then
               ./deploy/${VERSION}/cd-deploy.sh
             fi
+
       - name: echo result
         run: echo "A new Release with version $VERSION has been deployed in preview status. When you want to make it live use `tb release promote --semver $VERSION`"

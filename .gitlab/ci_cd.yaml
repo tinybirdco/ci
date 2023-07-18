@@ -49,7 +49,7 @@ variables:
         ./deploy/${VERSION}/ci-deploy.sh
       else
         # FIXME add --semver
-        tb deploy --populate --wait
+        tb deploy --populate --fixtures --wait
       fi
 
     # List changes with test Environment (should be empty)
@@ -117,8 +117,15 @@ variables:
 
     # Deploy changes to the main Workspace
     - |
-      tb env deploy --semver ${VERSION} --wait
-      tb release ls
+      if ${TB_DEPLOY}; then
+        tb env deploy --semver ${VERSION} --wait
+        tb release ls
+      else
+        CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
+        if [! -f "$CD_DEPLOY_FILE" ]; then
+          tb deploy
+        fi
+      fi
 
     # OPTIONALLY run post CD deploy commands (e.g.: tb pipe populate)
     - |

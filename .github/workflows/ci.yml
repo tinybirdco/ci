@@ -4,11 +4,6 @@ name: Tinybird CI with branching
 on:
   workflow_call:
     inputs:
-      tb_deploy:
-        description: "use tb deploy based on git releases"
-        required: false
-        type: boolean
-        default: false
       data_project_dir:
         description: "relative path of the folder containing the data project"
         required: false
@@ -76,8 +71,7 @@ jobs:
           if [ -f "$CI_DEPLOY_FILE" ]; then
             ./deploy/${VERSION}/ci-deploy.sh
           else
-            # FIXME add --semver
-            tb deploy --populate --wait
+            tb deploy --populate --fixtures --wait
           fi
 
       - name: List changes with test Environment (should be empty)
