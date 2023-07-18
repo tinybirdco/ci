@@ -35,10 +35,10 @@ jobs:
         run: |
           _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
           ls -lha
-          echo $pwd
+          echo "$pwd"
           cd $DATA_PROJECT_DIR
           ls -lha
-          echo $DATA_PROJECT_DIR
+          echo "$DATA_PROJECT_DIR"
           _NORMALIZED_ENV_NAME=`echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev`
           GIT_BRANCH=${GITHUB_HEAD_REF}
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
