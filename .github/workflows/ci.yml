@@ -29,7 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
         with:
-          fetch-depth: 0
+          fetch-depth: 300
           ref: ${{ github.event.pull_request.head.sha }}
       - uses: actions/setup-python@v3
         with:
@@ -39,9 +39,9 @@ jobs:
       - name: Set environment variables
         run: |
           _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
-          ls -lha
           _NORMALIZED_ENV_NAME=`echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev`
           GIT_BRANCH=${GITHUB_HEAD_REF}
+          source .tinyenv
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
       - name: Install Tinybird CLI
         run: pip install tinybird-cli
@@ -71,16 +71,12 @@ jobs:
 
       - name: Push changes to the test Environment
         run: |
-          PUSH_FILE=./deployment/${{env.GIT_BRANCH}}-push.sh
-          if [ -f "$PUSH_FILE" ]; then
-            ./deployment/${{env.GIT_BRANCH}}-push.sh
+          CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
+          if [ -f "$CI_DEPLOY_FILE" ]; then
+            ./deploy/${VERSION}/ci-deploy.sh
           else
-            if ${{ inputs.tb_deploy}}; then
-              tb deploy --populate --fixtures --wait
-            else
-              tb push --push-deps --only-changes --fixtures --force --populate --wait
-            fi
-          fi
+            # FIXME add --semver
+            tb deploy --populate --wait
 
       - name: List changes with test Environment (should be empty)
         run: tb diff
