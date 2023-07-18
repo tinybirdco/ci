@@ -37,6 +37,7 @@ jobs:
           ls -lha
           echo $pwd
           cd $DATA_PROJECT_DIR
+          ls -lha
           echo $DATA_PROJECT_DIR
           _NORMALIZED_ENV_NAME=`echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev`
           GIT_BRANCH=${GITHUB_HEAD_REF}
