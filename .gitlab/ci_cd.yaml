@@ -7,11 +7,21 @@ stages:
 variables:
   PYTHON_VERSION: "3.11"
   IMAGE_BASE: python:${PYTHON_VERSION}-slim-bullseye
+  GIT_STRATEGY: "clone"
+  GIT_CHECKOUT: "false"
+  GIT_DEPTH: 300
+
+.checkout_branch:
+  before_script: &checkout_branch
+    - git fetch origin "$CI_COMMIT_REF_NAME"
+    - git checkout "$CI_COMMIT_REF_NAME"
 
 .run_ci:
   stage: ci
   image: ${IMAGE_BASE}
   interruptible: true
+  before_script:
+    - *checkout_branch
   script:
     - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
     - _CI_POPULATE="${CI_POPULATE:=--populate --wait}"
@@ -76,6 +86,8 @@ variables:
 .cleanup_ci_branch:
   stage: cleanup
   image: ${IMAGE_BASE}
+  before_script:
+    - *checkout_branch
   script:
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
     - _NORMALIZED_ENV_NAME=`echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev`
@@ -102,6 +114,8 @@ variables:
   stage: cd
   image: ${IMAGE_BASE}
   interruptible: true
+  before_script:
+    - *checkout_branch
   script:
     - _CD_POPULATE="${CD_POPULATE:= }"
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
