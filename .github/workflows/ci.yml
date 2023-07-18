@@ -11,7 +11,7 @@ on:
         default: false
       data_project_dir:
         description: "relative path of the folder containing the data project"
-        required: true
+        required: false
         type: string
         default: .
     secrets:
