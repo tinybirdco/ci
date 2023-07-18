@@ -74,3 +74,5 @@ jobs:
             if [ -f "$CD_DEPLOY_FILE" ]; then
               ./deploy/${VERSION}/cd-deploy.sh
             fi
+      - name: echo result
+        run: echo "A new Release with version $VERSION has been deployed in preview status. When you want to make it live use `tb release promote --semver $VERSION`"
