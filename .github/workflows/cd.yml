@@ -8,6 +8,11 @@ on:
         required: false
         type: boolean
         default: false
+      data_project_dir:
+        description: "relative path of the folder containing the data project"
+        required: false
+        type: string
+        default: .
     secrets:
       admin_token:
         required: true
@@ -17,6 +22,9 @@ on:
 jobs:
   push_changes:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inpupts.data_project_dir }}
     name: Push changes to Workspace
     steps:
       - name: Checkout

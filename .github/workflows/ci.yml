@@ -111,6 +111,9 @@ jobs:
           tb env regression-tests coverage --wait $(echo ${REGRESSION_LABELS} | tr , ' ')
   cleanup:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.data_project_dir }}
     if: ${{ always() }}
     needs: [ci_branching]
     steps:
