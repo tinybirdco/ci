@@ -135,9 +135,9 @@ variables:
         ./deployment/${CI_COMMIT_REF_NAME}-push.sh
       else
         if $TB_DEPLOY; then
-          tb deploy --populate --fixtures --wait
+          tb deploy --populate --wait
         else
-          tb push --push-deps --only-changes --fixtures --force ${_CD_POPULATE}
+          tb push --push-deps --only-changes --force ${_CD_POPULATE}
         fi
       fi
 
