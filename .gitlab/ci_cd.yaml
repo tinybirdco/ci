@@ -48,7 +48,6 @@ variables:
       if [ -f "$CI_DEPLOY_FILE" ]; then
         ./deploy/${VERSION}/ci-deploy.sh
       else
-        # FIXME add --semver
         tb deploy --populate --fixtures --wait
       fi
 
