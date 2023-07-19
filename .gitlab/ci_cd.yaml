@@ -15,7 +15,7 @@ variables:
   script:
     - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
-    _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
+    - _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
     - source .tinyenv
 
     # Create Python Virtual Environment
@@ -76,7 +76,7 @@ variables:
   script:
     - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
-    _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
+    - _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
     - source .tinyenv
 
     # Create Python Virtual Environment
