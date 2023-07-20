@@ -1,14 +1,14 @@
 
-name: Tinybird CI with branching
+name: Tinybird CI
 
 on:
   workflow_call:
     inputs:
-      tb_deploy:
-        description: "use tb deploy based on git releases"
+      data_project_dir:
+        description: "relative path of the folder containing the data project"
         required: false
-        type: boolean
-        default: false
+        type: string
+        default: .
     secrets:
       admin_token:
         required: true
@@ -20,11 +20,11 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./
+        working-directory: ${{ inputs.data_project_dir }}
     steps:
       - uses: actions/checkout@master
         with:
-          fetch-depth: 0
+          fetch-depth: 300
           ref: ${{ github.event.pull_request.head.sha }}
       - uses: actions/setup-python@v3
         with:
@@ -34,8 +34,9 @@ jobs:
       - name: Set environment variables
         run: |
           _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
-          _NORMALIZED_ENV_NAME=`echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev`
+          _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
           GIT_BRANCH=${GITHUB_HEAD_REF}
+          source .tinyenv
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
       - name: Install Tinybird CLI
         run: pip install tinybird-cli
@@ -65,15 +66,12 @@ jobs:
 
       - name: Push changes to the test Environment
         run: |
-          PUSH_FILE=./deployment/${{env.GIT_BRANCH}}-push.sh
-          if [ -f "$PUSH_FILE" ]; then
-            ./deployment/${{env.GIT_BRANCH}}-push.sh
+          source .tinyenv
+          CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
+          if [ -f "$CI_DEPLOY_FILE" ]; then
+            ./deploy/${VERSION}/ci-deploy.sh
           else
-            if ${{ inputs.tb_deploy}}; then
-              tb deploy --populate --fixtures --wait
-            else
-              tb push --push-deps --only-changes --fixtures --force --populate --wait
-            fi
+            tb deploy --populate --fixtures --wait
           fi
 
       - name: List changes with test Environment (should be empty)
@@ -98,13 +96,15 @@ jobs:
 
       - name: Run pipe regression tests
         run: |
-          REGRESSION_FILE=./deployment/${{env.GIT_BRANCH}}-regression.yaml
           echo ${{ steps.regression_labels.outputs.labels }}
           REGRESSION_LABELS=$(echo "${{ steps.regression_labels.outputs.labels }}" | awk -F, '{for (i=1; i<=NF; i++) if ($i ~ /^--/) print $i}' ORS=',' | sed 's/,$//')
           echo ${REGRESSION_LABELS}
           tb env regression-tests coverage --wait $(echo ${REGRESSION_LABELS} | tr , ' ')
   cleanup:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.data_project_dir }}
     if: ${{ always() }}
     needs: [ci_branching]
     steps:

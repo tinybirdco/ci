@@ -1,4 +1,4 @@
-name: Tinybird CD with versioning
+name: Tinybird CD
 
 on:
   workflow_call:
@@ -8,6 +8,11 @@ on:
         required: false
         type: boolean
         default: false
+      data_project_dir:
+        description: "relative path of the folder containing the data project"
+        required: false
+        type: string
+        default: .
     secrets:
       admin_token:
         required: true
@@ -17,12 +22,15 @@ on:
 jobs:
   push_changes:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inpupts.data_project_dir }}
     name: Push changes to Workspace
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 300
           ref: ${{ github.event.pull_request.head.sha }}
       - uses: actions/setup-python@v3
         with:
@@ -30,32 +38,65 @@ jobs:
           architecture: "x64"
       - name: Set environment variables
         run: |
+          _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
+          _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
           GIT_BRANCH=${GITHUB_HEAD_REF}
+          source .tinyenv
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+
       - name: Install Tinybird CLI
         run: pip install tinybird-cli
+
       - name: Tinybird version
         run: tb --version
+
       - name: Check all the data files syntax
         run: tb check
-      - name: Authenticate
+
+      - name: Create new test Environment with data
         run: |
-          tb auth \
-          --host ${{ secrets.tb_host }} \
-          --token ${{ secrets.admin_token }} \
-      - name: List changes with Workspace
-        run: tb diff --no-verbose
-      - name: Push changes to Workspace
+            tb \
+              --host $TB_HOST \
+              --token $ADMIN_TOKEN \
+              env create tmp_cd_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
+              ${_ENV_FLAGS}
+
+      - name: List changes with Workspace (should be empty)
+        run: tb diff --production --no-verbose
+
+      - name: Push changes to the test Environment
         run: |
-            PUSH_FILE=./deployment/${{env.GIT_BRANCH}}-push.sh
-            if [ -f "$PUSH_FILE" ]; then
-              ./deployment/${{env.GIT_BRANCH}}-push.sh
+            source .tinyenv
+            CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
+            if [ -f "$CI_DEPLOY_FILE" ]; then
+              ./deploy/${VERSION}/ci-deploy.sh
             else
-              if ${{ inputs.tb_deploy}}; then
-                tb deploy --populate --wait
-              else
-                tb push --push-deps --only-changes --force --populate --wait
+              tb deploy --populate --fixtures --wait
+            fi
+
+      - name: List changes with test Environment (should be empty)
+        run: tb diff
+
+      - name: Deploy changes to the main Workspace
+        run: |
+            if ${{ inputs.tb_deploy}}; then
+              tb env deploy --semver ${VERSION} --wait
+              tb release ls
+            else
+              CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
+              if [! -f "$CD_DEPLOY_FILE" ]; then
+                tb deploy
               fi
             fi
-      - name: List changes with Workspace (should be empty)
-        run: tb diff
+          fi
+
+      - name: run post CD deploy commands
+        run: |
+            source .tinyenv
+            CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
+            if [ -f "$CD_DEPLOY_FILE" ]; then
+              ./deploy/${VERSION}/cd-deploy.sh
+            fi
+
+      - name: echo result
+        run: echo "A new Release with version $VERSION has been deployed in preview status. When you want to make it live use `tb release promote --semver $VERSION`"
