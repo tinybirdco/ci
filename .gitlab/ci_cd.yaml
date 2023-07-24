@@ -1,8 +1,8 @@
 
 stages:
   - ci
-  - cleanup
   - cd
+  - cleanup
 
 variables:
   PYTHON_VERSION: "3.11"
