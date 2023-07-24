@@ -142,7 +142,7 @@ variables:
   image: ${IMAGE_BASE}
   script:
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
-    - _NORMALIZED_ENV_NAME=`echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev`
+    - _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
 
     # Create Python Virtual Environment
     - python -m venv .venv
@@ -167,7 +167,7 @@ variables:
   image: ${IMAGE_BASE}
   script:
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
-    - _NORMALIZED_ENV_NAME=`echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev`
+    - _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
 
     # Create Python Virtual Environment
     - python -m venv .venv
