@@ -126,6 +126,9 @@ variables:
       else
         CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
         if [ ! -f "$CD_DEPLOY_FILE" ]; then
+          tb auth \
+            --host $TB_HOST \
+            --token $ADMIN_TOKEN
           tb deploy
         fi
       fi
