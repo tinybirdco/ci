@@ -12,6 +12,8 @@ variables:
   stage: ci
   image: ${IMAGE_BASE}
   interruptible: true
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends git
   script:
     - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
@@ -72,6 +74,8 @@ variables:
   stage: cd
   image: ${IMAGE_BASE}
   interruptible: true
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends git
   script:
     - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
