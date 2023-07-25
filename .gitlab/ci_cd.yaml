@@ -1,8 +1,8 @@
 
 stages:
   - ci
-  - cleanup
   - cd
+  - cleanup
 
 variables:
   PYTHON_VERSION: "3.11"
@@ -12,6 +12,8 @@ variables:
   stage: ci
   image: ${IMAGE_BASE}
   interruptible: true
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends git
   script:
     - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
@@ -72,6 +74,8 @@ variables:
   stage: cd
   image: ${IMAGE_BASE}
   interruptible: true
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends git
   script:
     - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
@@ -121,7 +125,10 @@ variables:
         tb release ls
       else
         CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
-        if [! -f "$CD_DEPLOY_FILE" ]; then
+        if [ ! -f "$CD_DEPLOY_FILE" ]; then
+          tb auth \
+            --host $TB_HOST \
+            --token $ADMIN_TOKEN
           tb deploy
         fi
       fi
@@ -138,7 +145,7 @@ variables:
   image: ${IMAGE_BASE}
   script:
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
-    - _NORMALIZED_ENV_NAME=`echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev`
+    - _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
 
     # Create Python Virtual Environment
     - python -m venv .venv
@@ -163,7 +170,7 @@ variables:
   image: ${IMAGE_BASE}
   script:
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
-    - _NORMALIZED_ENV_NAME=`echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev`
+    - _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
 
     # Create Python Virtual Environment
     - python -m venv .venv
@@ -175,7 +182,7 @@ variables:
     # Tinybird version
     - tb --version
 
-    # Remove test Environment
+    # Remove Environment
     - |
       tb \
       --host $TB_HOST \
