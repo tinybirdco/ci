@@ -182,7 +182,7 @@ variables:
     # Tinybird version
     - tb --version
 
-    # Remove test Environment
+    # Remove Environment
     - |
       tb \
       --host $TB_HOST \
