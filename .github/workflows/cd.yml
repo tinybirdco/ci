@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ${{ inpupts.data_project_dir }}
+        working-directory: ${{ inputs.data_project_dir }}
     name: Push changes to Workspace
     steps:
       - name: Checkout
@@ -56,8 +56,8 @@ jobs:
       - name: Create new test Environment with data
         run: |
             tb \
-              --host $TB_HOST \
-              --token $ADMIN_TOKEN \
+              --host ${{ secrets.tb_host }}  \
+              --token ${{ secrets.admin_token }}  \
               env create tmp_cd_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
               ${_ENV_FLAGS}
 
@@ -84,11 +84,13 @@ jobs:
               tb release ls
             else
               CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
-              if [! -f "$CD_DEPLOY_FILE" ]; then
+              if [ ! -f "$CD_DEPLOY_FILE" ]; then
+                tb auth \
+                  --host ${{ secrets.tb_host }} \
+                  --token ${{ secrets.admin_token }}
                 tb deploy
               fi
             fi
-          fi
 
       - name: run post CD deploy commands
         run: |
