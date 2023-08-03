@@ -79,7 +79,8 @@ jobs:
 
       - name: Deploy changes to the main Workspace
         run: |
-            if ${{ inputs.tb_deploy}}; then
+            source .tinyenv
+            if ${{ inputs.tb_deploy}}; then      
               tb env deploy --semver ${VERSION} --wait
               tb release ls
             else
@@ -101,7 +102,7 @@ jobs:
             fi
 
       - name: echo result
-        run: echo "A new Release with version $VERSION has been deployed in preview status. When you want to make it live use `tb release promote --semver $VERSION`"
+        run: echo "A new Release with version ${VERSION} has been deployed in preview status. When you want to make it live use `tb release promote --semver $VERSION`"
   cleanup:
     runs-on: ubuntu-latest
     defaults:
