@@ -84,11 +84,11 @@ jobs:
               tb env deploy --semver ${VERSION} --wait
               tb release ls
             else
-              CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
-              if [ ! -f "$CD_DEPLOY_FILE" ]; then
-                tb auth \
+              tb auth \
                   --host ${{ secrets.tb_host }} \
                   --token ${{ secrets.admin_token }}
+              CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
+              if [ ! -f "$CD_DEPLOY_FILE" ]; then
                 tb deploy
               fi
             fi
