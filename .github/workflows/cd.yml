@@ -79,15 +79,16 @@ jobs:
 
       - name: Deploy changes to the main Workspace
         run: |
-            if ${{ inputs.tb_deploy}}; then
+            source .tinyenv
+            if ${{ inputs.tb_deploy}}; then      
               tb env deploy --semver ${VERSION} --wait
               tb release ls
             else
-              CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
-              if [ ! -f "$CD_DEPLOY_FILE" ]; then
-                tb auth \
+              tb auth \
                   --host ${{ secrets.tb_host }} \
                   --token ${{ secrets.admin_token }}
+              CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
+              if [ ! -f "$CD_DEPLOY_FILE" ]; then
                 tb deploy
               fi
             fi
@@ -100,8 +101,6 @@ jobs:
               ./deploy/${VERSION}/cd-deploy.sh
             fi
 
-      - name: echo result
-        run: echo "A new Release with version $VERSION has been deployed in preview status. When you want to make it live use `tb release promote --semver $VERSION`"
   cleanup:
     runs-on: ubuntu-latest
     defaults:
