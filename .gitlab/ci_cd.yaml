@@ -8,6 +8,13 @@ variables:
   PYTHON_VERSION: "3.11"
   IMAGE_BASE: python:${PYTHON_VERSION}-slim-bullseye
 
+
+.validate_input: &validate_input
+  - |
+    if [[ $ADMIN_TOKEN =~ .*ADMIN_TOKEN ]]; then
+      echo "Set ADMIN_TOKEN variable"; exit 1;
+    fi
+
 .run_ci:
   stage: ci
   image: ${IMAGE_BASE}
@@ -15,6 +22,7 @@ variables:
   before_script:
     - apt-get update && apt-get install -y --no-install-recommends git
   script:
+    - *validate_input
     - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
     - _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
@@ -77,6 +85,7 @@ variables:
   before_script:
     - apt-get update && apt-get install -y --no-install-recommends git
   script:
+    - *validate_input
     - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
     - _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
@@ -144,6 +153,7 @@ variables:
   stage: cleanup
   image: ${IMAGE_BASE}
   script:
+    - *validate_input
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
     - _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
 
@@ -169,6 +179,7 @@ variables:
   stage: cleanup
   image: ${IMAGE_BASE}
   script:
+    - *validate_input
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
     - _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
 

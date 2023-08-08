@@ -31,6 +31,10 @@ jobs:
           python-version: "3.8"
           architecture: "x64"
 
+      - name: Validate input
+        run: |
+          [[ "${{ secrets.admin_token }}" ]] || { echo "Set ADMIN_TOKEN variable"; exit 1; }
+
       - name: Set environment variables
         run: |
           _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
@@ -113,6 +117,10 @@ jobs:
         with:
           python-version: "3.8"
           architecture: "x64"
+
+      - name: Validate input
+        run: |
+          [[ "${{ secrets.admin_token }}" ]] || { echo "Set ADMIN_TOKEN variable"; exit 1; }
 
       - name: Install Tinybird CLI
         run: pip install tinybird-cli
