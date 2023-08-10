@@ -67,7 +67,7 @@ jobs:
               ${_ENV_FLAGS}
 
       - name: List changes with Workspace (should be empty)
-        run: tb diff --production --no-verbose
+        run: tb diff --main --no-verbose
 
       - name: Push changes to the test Environment
         run: |
