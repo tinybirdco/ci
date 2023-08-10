@@ -65,8 +65,8 @@ jobs:
           echo "::add-mask::$ENV_TOKEN"
           echo "TB_TOKEN=$ENV_TOKEN" >> $GITHUB_ENV
 
-      - name: List changes with production Workspace
-        run: tb diff --production --no-verbose
+      - name: List changes with Main Environment
+        run: tb diff --main --no-verbose
 
       - name: Push changes to the test Environment
         run: |
