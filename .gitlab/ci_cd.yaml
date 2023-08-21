@@ -3,6 +3,7 @@ stages:
   - ci
   - cd
   - cleanup
+  - release
 
 variables:
   PYTHON_VERSION: "3.11"
@@ -200,3 +201,76 @@ variables:
       --token $ADMIN_TOKEN \
       env rm tmp_cd_${_NORMALIZED_ENV_NAME}_${CI_COMMIT_SHORT_SHA} \
       --yes
+
+.release_promote:
+  stage: release
+  image: ${IMAGE_BASE}
+  script:
+    - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
+
+    # Create Python Virtual Environment
+    - python -m venv .venv
+    - source .venv/bin/activate
+
+    # Install Tinybird CLI
+    - pip install tinybird-cli
+
+    # Tinybird version
+    - tb --version
+
+    # Promote Release
+    - |
+      source .tinyenv
+      tb \
+      --host $TB_HOST \
+      --token $ADMIN_TOKEN \
+      release promote \
+      --semver $VERSION
+
+.release_rollback:
+  stage: release
+  image: ${IMAGE_BASE}
+  script:
+    - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
+
+    # Create Python Virtual Environment
+    - python -m venv .venv
+    - source .venv/bin/activate
+
+    # Install Tinybird CLI
+    - pip install tinybird-cli
+
+    # Tinybird version
+    - tb --version
+
+    # Promote Release
+    - |
+      source .tinyenv
+      tb \
+      --host $TB_HOST \
+      --token $ADMIN_TOKEN \
+      release rollback
+
+.release_rm:
+  stage: release
+  image: ${IMAGE_BASE}
+  script:
+    - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
+
+    # Create Python Virtual Environment
+    - python -m venv .venv
+    - source .venv/bin/activate
+
+    # Install Tinybird CLI
+    - pip install tinybird-cli
+
+    # Tinybird version
+    - tb --version
+
+    # Promote Release
+    - |
+      source .tinyenv
+      tb \
+      --host $TB_HOST \
+      --token $ADMIN_TOKEN \
+      release rm --semver $VERSION
