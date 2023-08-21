@@ -202,7 +202,7 @@ variables:
       env rm tmp_cd_${_NORMALIZED_ENV_NAME}_${CI_COMMIT_SHORT_SHA} \
       --yes
 
-.release:
+.release_promote:
   stage: release
   image: ${IMAGE_BASE}
   script:
@@ -224,7 +224,7 @@ variables:
       --token $ADMIN_TOKEN \
       --semver $VERSION
 
-.rollback:
+.release_rollback:
   stage: release
   image: ${IMAGE_BASE}
   script:
@@ -242,5 +242,26 @@ variables:
     - |
       source .tinyenv
       tb release rollback \
+      --host $TB_HOST \
+      --token $ADMIN_TOKEN
+
+.release_rm:
+  stage: release
+  image: ${IMAGE_BASE}
+  script:
+    # Create Python Virtual Environment
+    - python -m venv .venv
+    - source .venv/bin/activate
+
+    # Install Tinybird CLI
+    - pip install tinybird-cli
+
+    # Tinybird version
+    - tb --version
+
+    # Promote Release
+    - |
+      source .tinyenv
+      tb release rm --semver $VERSION \
       --host $TB_HOST \
       --token $ADMIN_TOKEN
