@@ -137,3 +137,98 @@ jobs:
           --token ${{ secrets.admin_token }} \
           env rm tmp_cd_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
           --yes
+
+  release_promote:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.data_project_dir }}
+    needs: [push_changes]
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.8"
+          architecture: "x64"
+
+      - name: Validate input
+        run: |
+          [[ "${{ secrets.admin_token }}" ]] || { echo "Set ADMIN_TOKEN variable"; exit 1; }
+
+      - name: Install Tinybird CLI
+        run: pip install tinybird-cli
+
+      - name: Tinybird version
+        run: tb --version
+
+      - name: Promote Release
+        run: |
+          source .tinyenv
+          tb \
+          --host ${{ secrets.tb_host }} \
+          --token ${{ secrets.admin_token }} \
+          release promote \
+          --semver $VERSION
+
+  release_rollback:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.data_project_dir }}
+    needs: [push_changes]
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.8"
+          architecture: "x64"
+
+      - name: Validate input
+        run: |
+          [[ "${{ secrets.admin_token }}" ]] || { echo "Set ADMIN_TOKEN variable"; exit 1; }
+
+      - name: Install Tinybird CLI
+        run: pip install tinybird-cli
+
+      - name: Tinybird version
+        run: tb --version
+
+      - name: Promote Release
+        run: |
+          source .tinyenv
+          tb \
+          --host ${{ secrets.tb_host }} \
+          --token ${{ secrets.admin_token }} \
+          release rollback
+
+  release_rm:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.data_project_dir }}
+    needs: [push_changes]
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.8"
+          architecture: "x64"
+
+      - name: Validate input
+        run: |
+          [[ "${{ secrets.admin_token }}" ]] || { echo "Set ADMIN_TOKEN variable"; exit 1; }
+
+      - name: Install Tinybird CLI
+        run: pip install tinybird-cli
+
+      - name: Tinybird version
+        run: tb --version
+
+      - name: Promote Release
+        run: |
+          source .tinyenv
+          tb \
+          --host ${{ secrets.tb_host }} \
+          --token ${{ secrets.admin_token }} \
+          release rm \
+          --semver $VERSION
