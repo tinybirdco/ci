@@ -221,9 +221,10 @@ variables:
     # Promote Release
     - |
       source .tinyenv
-      tb release promote \
+      tb \
       --host $TB_HOST \
       --token $ADMIN_TOKEN \
+      release promote \
       --semver $VERSION
 
 .release_rollback:
@@ -245,9 +246,10 @@ variables:
     # Promote Release
     - |
       source .tinyenv
-      tb release rollback \
+      tb \
       --host $TB_HOST \
-      --token $ADMIN_TOKEN
+      --token $ADMIN_TOKEN \
+      release rollback
 
 .release_rm:
   stage: release
@@ -268,6 +270,7 @@ variables:
     # Promote Release
     - |
       source .tinyenv
-      tb release rm --semver $VERSION \
+      tb \
       --host $TB_HOST \
-      --token $ADMIN_TOKEN
+      --token $ADMIN_TOKEN \
+      release rm --semver $VERSION
