@@ -52,3 +52,4 @@ while [[ $retry_count -lt $max_retries ]]; do
     else
         echo "Counts are not equal."
     fi
+done
