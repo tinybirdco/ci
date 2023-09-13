@@ -1,8 +1,5 @@
 # CI Flows for Tinybird Data Projects
 
-[![Slack][https://img.shields.io/badge/slack-chat-1FCC83?style=for-the-badge&logo=slack]][https://www.tinybird.co/join-our-slack-community]
-[![License][https://img.shields.io/badge/license-MIT-red?style=for-the-badge&logo=none]][https://github.com/tinybirdco/ci/blob/main/LICENSE]
-
 A collection of configuration files that enable CI flows for Tinybird data projects.
 
 ## ⚡️ Quick start
