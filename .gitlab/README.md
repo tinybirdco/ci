@@ -1,17 +1,11 @@
 # Iterating your Tinybird data projects with a GitLab repository
 
-These are the steps to follow:
+Please, follow the [`Working with git`](working_with_git_guide_url) guide. It will setup automatically your GitLab CI for iterating your Tinybird data project.
+A new ENV variable `ADMIN_TOKEN` will be needed in your repository.
 
-1. Define these CI/CD variables in your repository:
+> Visit `Settings >> CI/CD >> Variables` section, and "Add variable" 
 
-    - `ADMIN_TOKEN` (required): the admin token from your Tinybird workspace
-    - `TB_HOST` (optional): in case your Tinybird workspace isn't in EU region
-    - `DATA_PROJECT_DIR` (optional): in case your data project is located in a folder and not in the main root
-
-> You can add them in the `Settings >> CI/CD >> Variables` section, and "Add variable"
-
-2. Follow the [`Working with git`](working_with_git_guide_url) guide
-3. Done 🎉
+If a tailored CI/CD solution is needed, take a look at our [ci_cd.yml](gitlab_ci_cd_file_url) file.
 
 
 ## Snippets
@@ -36,3 +30,4 @@ pre-commit:
 
 
 [working_with_git_guide_url]: https://www.tinybird.co/docs/guides/working-with-git.html
+[gitlab_ci_cd_file_url]: https://github.com/tinybirdco/ci/blob/main/gitlab/ci_cd.yml
