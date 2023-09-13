@@ -7,7 +7,7 @@ A collection of configuration files that enable CI flows for Tinybird data proje
 
 ## ⚡️ Quick start
 
-These configuration files have been created iterating you Tinybird data projects using CI & CD jobs.
+These configuration files have been created to iterate your Tinybird data projects using CI & CD jobs.
 
 **Please, follow this [guide](working_with_git_guide_url) for connecting your repository to your Tinybird data project.**
 
