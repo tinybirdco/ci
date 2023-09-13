@@ -139,6 +139,7 @@ jobs:
           --yes
 
   release_promote:
+    if: ${{ inputs.tb_deploy}}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -171,6 +172,7 @@ jobs:
           --semver $VERSION
 
   release_rollback:
+    if: ${{ inputs.tb_deploy}}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -202,6 +204,7 @@ jobs:
           release rollback
 
   release_rm:
+    if: ${{ inputs.tb_deploy}}
     runs-on: ubuntu-latest
     defaults:
       run:
