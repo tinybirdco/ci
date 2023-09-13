@@ -20,10 +20,4 @@ If you have identified any problem, open a [new ticket](https://github.com/tinyb
 
 ## ⚠️ License
 
-[`CI Flows for Tinybird Data Projects`][https://github.com/tinybirdco/ci] is free and open-source software licensed under the [MIT][https://github.com/tinybirdco/ci/blob/main/LICENSE] license.
-
-
-<!-- Images -->
-
-[slack_img]: https://img.shields.io/badge/slack-chat-1FCC83?style=for-the-badge&logo=slack
-[repo_license_img]: https://img.shields.io/badge/license-MIT-red?style=for-the-badge&logo=none
+[`CI Flows for Tinybird Data Projects`](https://github.com/tinybirdco/ci) is free and open-source software licensed under the [MIT](https://github.com/tinybirdco/ci/blob/main/LICENSE) license.
