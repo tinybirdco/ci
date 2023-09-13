@@ -1,76 +1,37 @@
-<p>
-  <a href="https://www.tinybird.co/join-our-slack-community"><img alt="Slack Status" src="https://img.shields.io/badge/slack-chat-1FCC83?style=flat&logo=slack"></a>
-</p>
+# CI Flows for Tinybird Data Projects
 
-# CI Flows for Tinybird Projects
+[![Slack][slack_img]][slack_community_url]
+[![License][repo_license_img]][repo_license_url]
 
-Collection of configuration files that enable CI flows for Tinybird projects. 
+A collection of configuration files that enable CI flows for Tinybird data projects.
 
-## Features
+## ⚡️ Quick start
 
-- Templates for popular CI tools like GitHub Actions and GitLab CI
+These configuration files have been created to iterate your Tinybird data projects using CI & CD jobs.
 
-## GitLab
+**Please, follow this [guide](working_with_git_guide_url) for connecting your repository to your Tinybird data project.**
 
-1. Include external YAML file in your CI/CD jobs
-2. Define variables `TB_HOST`, `ADMIN_TOKEN` and `DATA_PROJECT_DIR`
-3. Extend `.run_ci`, `.cleanup_ci_branch` and `run_cd` with rules and variables
+For the moment, we provide CI/CD configuration files for [GitLab](repo_gitlab_url) and [GitHub](repo_github_url).
 
-```
+## ⭐️ Support
 
-include: "https://raw.githubusercontent.com/tinybirdco/ci/main/.gitlab/ci_cd.yaml"
-
-.ci_config_rules:
-  - &ci_config_rule
-    if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    changes:
-      - .gitlab-ci.yml
-      - shared_internal_test/*
-  - &ci_cleanup_rule
-    if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    when: always
-
-.ci_variables:
-  variables: &ci_variables
-    TB_HOST: "<tinybird_api_endpoint_region_ie_https://api.tinybird.co>"
-    ADMIN_TOKEN: "<tinybird_admin_token>"
-    DATA_PROJECT_DIR: "<your_data_project_directory>"
-    
-.cd_config_rules:
-  - &cd_config_rule
-    if: $CI_COMMIT_BRANCH == '$CI_DEFAULT_BRANCH' && $CI_PIPELINE_SOURCE == 'merge_request_event'
-
-.cd_variables:
-  variables: &cd_variables
-    TB_HOST: "<tinybird_api_endpoint_region_ie_https://api.tinybird.co>"
-    ADMIN_TOKEN: "<tinybird_admin_token>"
-    DATA_PROJECT_DIR: "<your_data_project_directory>"
+If you have identified any problem, open a [new ticket](repo_issues_url) or fork this repository and create a new merge request. If you have any question you can join our [Slack community channel](slack_community_url).
 
 
-run_ci:
-  extends: .run_ci
-  rules:
-    - *ci_config_rule
-  variables:
-    <<: *ci_variables
+## ⚠️ License
 
-cleanup_ci:
-  extends: .cleanup_ci_branch
-  rules:
-    - *ci_cleanup_rule
-  variables:
-    <<: *ci_variables
-    
-run_cd:
-  extends: .run_cd
-  rules:
-    - *cd_config_rule
-  variables:
-    <<: *cd_variables
+[`CI Flows for Tinybird Data Projects`][repo_url] is free and open-source software licensed under the [MIT][repo_license_url] license.
 
-```
 
-## GitHub
+<!-- Links -->
+[repo_url]: https://github.com/tinybirdco/ci
+[repo_license_url]: https://github.com/tinybirdco/ci/blob/main/LICENSE
+[repo_issues_url]: https://github.com/tinybirdco/ci/issues
+[repo_gitlab_url]: https://github.com/tinybirdco/ci/blob/main/gitlab
+[repo_github_url]: https://github.com/tinybirdco/ci/blob/main/github
+[slack_community_url]: https://www.tinybird.co/join-our-slack-community
+[working_with_git_guide_url]: https://www.tinybird.co/docs/guides/working-with-git.html
 
-1. Using inputs `tb_host` and `admin_token`
-2. Call reusable job workflow => See example [here](https://github.com/tinybirdco/ecommerce_data_project/tree/master/.github)
+<!-- Images -->
+[slack_img]: https://img.shields.io/badge/slack-chat-1FCC83?style=for-the-badge&logo=slack
+[repo_license_img]: https://img.shields.io/badge/license-MIT-red?style=for-the-badge&logo=none
