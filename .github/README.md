@@ -1,18 +1,12 @@
 # Iterating your Tinybird data projects with a GitHub repository
 
-These are the steps to follow:
+We encourage you to follow the [`Working with git`](working_with_git_guide_url) guide for setting a proper GitHub workflow for iterating your Tinybird data project.
 
-1. Define these CI/CD variables in your repository:
+You will only need to define a secret key `ADMIN_TOKEN` in your repository.
 
-    - `ADMIN_TOKEN` (required): the admin token from your Tinybird workspace
-    - `TB_HOST` (optional): in case your Tinybird workspace isn't in EU region
-    - `DATA_PROJECT_DIR` (optional): in case your data project is located in a folder and not in the main root
+> You can add them in the `Settings >> Secrets and variables >> Actions` section and create a "New repository secret" 
 
-> You can add them in the `Settings >> Secrets and variables >> Actions` and create a "New repository secret" 
-
-2. Follow the [`Working with git`](working_with_git_guide_url) guide
-3. Done 🎉
-
+In case you want a tailored CI/CD solution, take a look to our [ci.yml](github_ci_file_url) and [cd.yml](github_cd_file_url) files.
 
 ## Snippets
 
@@ -38,3 +32,5 @@ repos:
 ```
 
 [working_with_git_guide_url]: https://www.tinybird.co/docs/guides/working-with-git.html
+[github_ci_file_url]: https://github.com/tinybirdco/ci/blob/main/github/workflows/ci.yml
+[github_cd_file_url]: https://github.com/tinybirdco/ci/blob/main/github/workflows/cd.yml
