@@ -30,4 +30,4 @@ pre-commit:
 
 
 [working_with_git_guide_url]: https://www.tinybird.co/docs/guides/working-with-git.html
-[gitlab_ci_cd_file_url]: https://github.com/tinybirdco/ci/blob/main/gitlab/ci_cd.yml
+[gitlab_ci_cd_file_url]: https://github.com/tinybirdco/ci/blob/main/.gitlab/ci_cd.yml

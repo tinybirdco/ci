@@ -31,5 +31,5 @@ repos:
 ```
 
 [working_with_git_guide_url]: https://www.tinybird.co/docs/guides/working-with-git.html
-[github_ci_file_url]: https://github.com/tinybirdco/ci/blob/main/github/workflows/ci.yml
-[github_cd_file_url]: https://github.com/tinybirdco/ci/blob/main/github/workflows/cd.yml
+[github_ci_file_url]: https://github.com/tinybirdco/ci/blob/main/.github/workflows/ci.yml
+[github_cd_file_url]: https://github.com/tinybirdco/ci/blob/main/.github/workflows/cd.yml
