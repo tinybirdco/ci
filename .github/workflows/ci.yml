@@ -70,6 +70,9 @@ jobs:
           env rm ${_ENV_NAME} \
           --yes
 
+      - name:
+        run: echo ${_ENV_NAME}
+
       - name: Create new test Environment with data
         run: |
           tb \
