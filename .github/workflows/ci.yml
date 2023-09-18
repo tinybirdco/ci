@@ -9,6 +9,11 @@ on:
         required: false
         type: string
         default: .
+      keep_env_on_mr:
+        description: "keep env live during MR"
+        required: false
+        type: boolean
+        default: false
     secrets:
       admin_token:
         required: true
@@ -42,6 +47,11 @@ jobs:
           GIT_BRANCH=${GITHUB_HEAD_REF}
           source .tinyenv
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+          if ${{ inputs.keep_env_on_mr}}; then  
+            _ENV_NAME="${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }}"
+          else
+            _ENV_NAME="create tmp_ci_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID}"
+          fi
       - name: Install Tinybird CLI
         run: pip install tinybird-cli
 
@@ -51,12 +61,21 @@ jobs:
       - name: Check all the data files syntax
         run: tb check  
 
+      - name: Delete Environment
+        if: ${{ inputs.keep_env_on_mr && github.event.action == 'synchronize'}}
+        run: |
+          tb \
+          --host ${{ secrets.tb_host }} \
+          --token ${{ secrets.admin_token }} \
+          env rm ${_ENV_NAME} \
+          --yes
+
       - name: Create new test Environment with data
         run: |
           tb \
           --host ${{ secrets.tb_host }} \
           --token ${{ secrets.admin_token }} \
-          env create tmp_ci_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
+          env ${_ENV_NAME} \
           ${_ENV_FLAGS}
 
       - name: List changes with Main Environment
@@ -103,7 +122,7 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.data_project_dir }}
-    if: ${{ always() }}
+    if: ${{ !inputs.keep_env_on_mr || github.event.action == 'closed' }}
     needs: [ci_branching]
     steps:
       - uses: actions/checkout@master
