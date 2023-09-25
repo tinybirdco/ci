@@ -14,7 +14,7 @@ on:
         type: string
         default: .
     secrets:
-      admin_token:
+      tb_admin_token:
         required: true
       tb_host:
         required: true
@@ -39,7 +39,7 @@ jobs:
 
       - name: Validate input
         run: |
-          [[ "${{ secrets.admin_token }}" ]] || { echo "Set ADMIN_TOKEN variable"; exit 1; }
+          [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Go to the tokens section in your Workspace, copy the "admin token (user@domain.com)" associated to a user account and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1; }
 
       - name: Set environment variables
         run: |
@@ -62,7 +62,7 @@ jobs:
         run: |
             tb \
               --host ${{ secrets.tb_host }}  \
-              --token ${{ secrets.admin_token }}  \
+              --token ${{ secrets.tb_admin_token }}  \
               env create tmp_cd_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
               ${_ENV_FLAGS}
 
@@ -91,7 +91,7 @@ jobs:
             else
               tb auth \
                   --host ${{ secrets.tb_host }} \
-                  --token ${{ secrets.admin_token }}
+                  --token ${{ secrets.tb_admin_token }}
               CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
               if [ ! -f "$CD_DEPLOY_FILE" ]; then
                 tb deploy
@@ -122,7 +122,7 @@ jobs:
 
       - name: Validate input
         run: |
-          [[ "${{ secrets.admin_token }}" ]] || { echo "Set ADMIN_TOKEN variable"; exit 1; }
+          [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Go to the tokens section in your Workspace, copy the "admin token (user@domain.com)" associated to a user account and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1; }
 
       - name: Install Tinybird CLI
         run: pip install tinybird-cli
@@ -134,7 +134,7 @@ jobs:
         run: |
           tb \
           --host ${{ secrets.tb_host }} \
-          --token ${{ secrets.admin_token }} \
+          --token ${{ secrets.tb_admin_token }} \
           env rm tmp_cd_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
           --yes
 
@@ -154,7 +154,7 @@ jobs:
 
       - name: Validate input
         run: |
-          [[ "${{ secrets.admin_token }}" ]] || { echo "Set ADMIN_TOKEN variable"; exit 1; }
+          [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Go to the tokens section in your Workspace, copy the "admin token (user@domain.com)" associated to a user account and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1; }
 
       - name: Install Tinybird CLI
         run: pip install tinybird-cli
@@ -167,7 +167,7 @@ jobs:
           source .tinyenv
           tb \
           --host ${{ secrets.tb_host }} \
-          --token ${{ secrets.admin_token }} \
+          --token ${{ secrets.tb_admin_token }} \
           release promote \
           --semver $VERSION
 
@@ -187,7 +187,7 @@ jobs:
 
       - name: Validate input
         run: |
-          [[ "${{ secrets.admin_token }}" ]] || { echo "Set ADMIN_TOKEN variable"; exit 1; }
+          [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Go to the tokens section in your Workspace, copy the "admin token (user@domain.com)" associated to a user account and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1; }
 
       - name: Install Tinybird CLI
         run: pip install tinybird-cli
@@ -200,7 +200,7 @@ jobs:
           source .tinyenv
           tb \
           --host ${{ secrets.tb_host }} \
-          --token ${{ secrets.admin_token }} \
+          --token ${{ secrets.tb_admin_token }} \
           release rollback
 
   release_rm:
@@ -219,7 +219,7 @@ jobs:
 
       - name: Validate input
         run: |
-          [[ "${{ secrets.admin_token }}" ]] || { echo "Set ADMIN_TOKEN variable"; exit 1; }
+          [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Go to the tokens section in your Workspace, copy the "admin token (user@domain.com)" associated to a user account and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1; }
 
       - name: Install Tinybird CLI
         run: pip install tinybird-cli
@@ -232,6 +232,6 @@ jobs:
           source .tinyenv
           tb \
           --host ${{ secrets.tb_host }} \
-          --token ${{ secrets.admin_token }} \
+          --token ${{ secrets.tb_admin_token }} \
           release rm \
           --semver $VERSION

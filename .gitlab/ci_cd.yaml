@@ -13,8 +13,8 @@ variables:
 
 .validate_input: &validate_input
   - |
-    if [[ $ADMIN_TOKEN =~ .*ADMIN_TOKEN ]]; then
-      echo "Set ADMIN_TOKEN variable"; exit 1;
+    if [[ $TB_ADMIN_TOKEN =~ .*TB_ADMIN_TOKEN ]]; then
+      echo "Go to the tokens section in your Workspace, copy the "admin token (user@domain.com)" associated to a user account and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1;
     fi
 
 .run_ci:
@@ -47,7 +47,7 @@ variables:
     - |
       tb \
         --host $TB_HOST \
-        --token $ADMIN_TOKEN \
+        --token $TB_ADMIN_TOKEN \
         env create tmp_ci_${_NORMALIZED_ENV_NAME}_${CI_COMMIT_SHORT_SHA} \
         ${_ENV_FLAGS}
 
@@ -110,7 +110,7 @@ variables:
     - |
       tb \
         --host $TB_HOST \
-        --token $ADMIN_TOKEN \
+        --token $TB_ADMIN_TOKEN \
         env create tmp_cd_${_NORMALIZED_ENV_NAME}_${CI_COMMIT_SHORT_SHA} \
         ${_ENV_FLAGS}
 
@@ -139,7 +139,7 @@ variables:
         if [ ! -f "$CD_DEPLOY_FILE" ]; then
           tb auth \
             --host $TB_HOST \
-            --token $ADMIN_TOKEN
+            --token $TB_ADMIN_TOKEN
           tb deploy
         fi
       fi
@@ -173,7 +173,7 @@ variables:
     - |
       tb \
       --host $TB_HOST \
-      --token $ADMIN_TOKEN \
+      --token $TB_ADMIN_TOKEN \
       env rm tmp_ci_${_NORMALIZED_ENV_NAME}_${CI_COMMIT_SHORT_SHA} \
       --yes
 
@@ -199,7 +199,7 @@ variables:
     - |
       tb \
       --host $TB_HOST \
-      --token $ADMIN_TOKEN \
+      --token $TB_ADMIN_TOKEN \
       env rm tmp_cd_${_NORMALIZED_ENV_NAME}_${CI_COMMIT_SHORT_SHA} \
       --yes
 
@@ -224,7 +224,7 @@ variables:
       source .tinyenv
       tb \
       --host $TB_HOST \
-      --token $ADMIN_TOKEN \
+      --token $TB_ADMIN_TOKEN \
       release promote \
       --semver $VERSION
 
@@ -249,7 +249,7 @@ variables:
       source .tinyenv
       tb \
       --host $TB_HOST \
-      --token $ADMIN_TOKEN \
+      --token $TB_ADMIN_TOKEN \
       release rollback
 
 .release_rm:
@@ -273,5 +273,5 @@ variables:
       source .tinyenv
       tb \
       --host $TB_HOST \
-      --token $ADMIN_TOKEN \
+      --token $TB_ADMIN_TOKEN \
       release rm --semver $VERSION
