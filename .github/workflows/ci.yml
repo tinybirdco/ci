@@ -33,7 +33,7 @@ jobs:
 
       - name: Validate input
         run: |
-          [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Set TB_ADMIN_TOKEN variable"; exit 1; }
+          [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Go to ${{ secrets.tb_host }}/tokens, copy the "admin token (user@domain.com)" associated to a user account and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1; }
 
       - name: Set environment variables
         run: |
@@ -114,7 +114,7 @@ jobs:
 
       - name: Validate input
         run: |
-          [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Set TB_ADMIN_TOKEN variable"; exit 1; }
+          [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Go to ${{ secrets.tb_host }}/tokens, copy the "admin token (user@domain.com)" associated to a user account and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1; }
 
       - name: Install Tinybird CLI
         run: pip install tinybird-cli
