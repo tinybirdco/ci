@@ -39,7 +39,7 @@ jobs:
 
       - name: Validate input
         run: |
-          [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Go the tokens section in your workspace and copy the "admin token (user@domain.com)" associated to a user account and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1; }
+          [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Go to the tokens section in your Workspace, copy the "admin token (user@domain.com)" associated to a user account and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1; }
 
       - name: Set environment variables
         run: |
