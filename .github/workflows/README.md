@@ -1,7 +1,7 @@
 # Iterating your Tinybird data projects with a GitHub repository
 
 Please, follow the [`Working with git`](https://www.tinybird.co/docs/guides/working-with-git.html) guide. It will setup automatically your GitHub workflow for iterating your Tinybird data project.
-A new secret key `ADMIN_TOKEN` will be needed in your repository.
+A new secret key `TB_ADMIN_TOKEN` will be needed in your repository.
 
 > Visit `Settings >> Secrets and variables >> Actions` section and create a "New repository secret" 
 
