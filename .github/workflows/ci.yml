@@ -42,6 +42,7 @@ jobs:
           GIT_BRANCH=${GITHUB_HEAD_REF}
           source .tinyenv
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+          echo "_ENV_FLAGS=$_ENV_FLAGS" >> $GITHUB_ENV
       - name: Install Tinybird CLI
         run: pip install tinybird-cli
 
@@ -61,11 +62,6 @@ jobs:
           --token ${{ secrets.tb_admin_token }} \
           env create tmp_ci_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
           ${_ENV_FLAGS}
-
-      - name: Use env
-        run: |
-          tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} env ls
-          tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} env use tmp_ci_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID}
 
       - name: ENV_FLAGS
         run: |
