@@ -63,7 +63,7 @@ jobs:
           ${_ENV_FLAGS}
 
       - name: Check envs
-        run: tb env ls
+        run: tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} env ls
 
       - name: List changes with Main Environment
         run: tb diff --main --no-verbose
