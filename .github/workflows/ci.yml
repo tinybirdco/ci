@@ -60,15 +60,17 @@ jobs:
           --host ${{ secrets.tb_host }} \
           --token ${{ secrets.tb_admin_token }} \
           env create tmp_ci_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
-          --wait
+          ${_ENV_FLAGS}
 
       - name: Use env
         run: |
           tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} env ls
           tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} env use tmp_ci_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID}
 
-      - name: TB_TOKEN
-        run: echo $TB_TOKEN
+      - name: ENV_FLAGS
+        run: |
+          echo ${ENV_FLAGS}
+          echo ${_ENV_FLAGS}
 
       - name: List changes with Main Environment
         run: tb diff --main --no-verbose
