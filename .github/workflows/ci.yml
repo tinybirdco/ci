@@ -52,7 +52,7 @@ jobs:
         run: tb check  
 
       - name: Check auth
-        run: tb auth info
+        run: tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} auth info
      
       - name: Create new test Environment with data
         run: |
