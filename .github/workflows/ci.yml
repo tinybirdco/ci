@@ -51,6 +51,9 @@ jobs:
       - name: Check all the data files syntax
         run: tb check  
 
+      - name: Check auth
+        run: tb auth info
+     
       - name: Create new test Environment with data
         run: |
           tb \
@@ -58,6 +61,9 @@ jobs:
           --token ${{ secrets.tb_admin_token }} \
           env create tmp_ci_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
           ${_ENV_FLAGS}
+
+      - name: Check envs
+        run: tb env ls
 
       - name: List changes with Main Environment
         run: tb diff --main --no-verbose
