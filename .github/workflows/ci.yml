@@ -54,7 +54,7 @@ jobs:
 
       - name: Check auth
         run: tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} auth info
-     
+
       - name: Create new test Environment with data
         run: |
           tb \
@@ -62,11 +62,6 @@ jobs:
           --token ${{ secrets.tb_admin_token }} \
           env create tmp_ci_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
           ${_ENV_FLAGS}
-
-      - name: ENV_FLAGS
-        run: |
-          echo ${ENV_FLAGS}
-          echo ${_ENV_FLAGS}
 
       - name: List changes with Main Environment
         run: tb diff --main --no-verbose

@@ -43,6 +43,9 @@ variables:
     # Check all the data files syntax
     - tb check
 
+    # Check auth
+    tb --host $TB_HOST --token $TB_ADMIN_TOKEN auth info
+
     # Create new test Environment with data
     - |
       tb \
