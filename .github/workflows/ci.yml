@@ -62,8 +62,8 @@ jobs:
           env create tmp_ci_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
           ${_ENV_FLAGS}
 
-      - name: Check envs
-        run: tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} env ls
+      - name: Use env
+        run: tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} env use tmp_ci_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID}
 
       - name: TB_TOKEN
         run: echo $TB_TOKEN
