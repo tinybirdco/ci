@@ -9,11 +9,6 @@ on:
         required: false
         type: string
         default: .
-      cleanup:
-        description: "set to true to clean up the CI Environment after the ci_branching job, otherwise the CI Environment is left to debug any possible issue"
-        required: false
-        type: boolean
-        default: false
     secrets:
       tb_admin_token:
         required: true
@@ -130,8 +125,7 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.data_project_dir }}
-    if: ${{ inputs.cleanup}}
-    needs: [ci_branching]
+    if: ${{ github.event.action == 'closed' }}
     steps:
       - uses: actions/checkout@master
       - uses: actions/setup-python@v3
@@ -149,10 +143,18 @@ jobs:
       - name: Tinybird version
         run: tb --version       
 
-      - name: Drop test Environment
+      - name: Try delete previous Environment
         run: |
-          tb \
-          --host ${{ secrets.tb_host }} \
-          --token ${{ secrets.tb_admin_token }} \
-          env rm tmp_ci_${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }} \
-          --yes
+          output=$(tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} env ls)
+          ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }}"
+
+          # Check if the environment name exists in the output
+          if [[ $output == *"$ENVIRONMENT_NAME"* ]]; then
+              tb \
+                --host ${{ secrets.tb_host }} \
+                --token ${{ secrets.tb_admin_token }} \
+                env rm $ENVIRONMENT_NAME \
+                --yes
+          else
+              echo "Skipping clean up: The Environment '$ENVIRONMENT_NAME' does not exist."
+          fi

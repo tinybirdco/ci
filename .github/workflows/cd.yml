@@ -68,7 +68,7 @@ jobs:
             tb \
               --host ${{ secrets.tb_host }}  \
               --token ${{ secrets.tb_admin_token }}  \
-              env create tmp_ci_${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }} \
+              env create tmp_cd_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
               ${_ENV_FLAGS}
 
       - name: List changes with Workspace (should be empty)
@@ -140,7 +140,7 @@ jobs:
           tb \
           --host ${{ secrets.tb_host }} \
           --token ${{ secrets.tb_admin_token }} \
-          env rm tmp_ci_${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }} \
+          env rm tmp_cd_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
           --yes
 
   release_promote:
