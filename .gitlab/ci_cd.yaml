@@ -48,7 +48,7 @@ variables:
 
     # Try delete previous Environment
     - |
-      output=$(tb env ls)
+      output=$(tb --host $TB_HOST --token $TB_ADMIN_TOKEN env ls)
       ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${CI_COMMIT_BRANCH}"
 
       # Check if the environment name exists in the output
