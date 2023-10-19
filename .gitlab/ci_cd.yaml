@@ -54,7 +54,7 @@ variables:
     # Try delete previous Environment
     - |
       output=$(tb --host $TB_HOST --token $TB_ADMIN_TOKEN env ls)
-      ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${CI_COMMIT_BRANCH}"
+      ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${CI_MERGE_REQUEST_IID}"
 
       # Check if the environment name exists in the output
       if [[ $output == *"$ENVIRONMENT_NAME"* ]]; then
@@ -72,7 +72,7 @@ variables:
       tb \
         --host $TB_HOST \
         --token $TB_ADMIN_TOKEN \
-        env create tmp_ci_${_NORMALIZED_ENV_NAME}_${CI_COMMIT_BRANCH} \
+        env create tmp_ci_${_NORMALIZED_ENV_NAME}_${CI_MERGE_REQUEST_IID} \
         ${_ENV_FLAGS}
 
     # List changes with Main Environment
@@ -208,7 +208,7 @@ variables:
       tb \
       --host $TB_HOST \
       --token $TB_ADMIN_TOKEN \
-      env rm tmp_ci_${_NORMALIZED_ENV_NAME}_${CI_COMMIT_BRANCH} \
+      env rm tmp_ci_${_NORMALIZED_ENV_NAME}_${CI_MERGE_REQUEST_IID} \
       --yes
 
 .cleanup_cd_branch:
