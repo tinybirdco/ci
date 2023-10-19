@@ -49,6 +49,7 @@ jobs:
           source .tinyenv
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
           echo "_ENV_FLAGS=$_ENV_FLAGS" >> $GITHUB_ENV
+          echo "_NORMALIZED_ENV_NAME=$_NORMALIZED_ENV_NAME" >> $GITHUB_ENV
 
       - name: Install Tinybird CLI
         run: pip install tinybird-cli
@@ -67,7 +68,7 @@ jobs:
             tb \
               --host ${{ secrets.tb_host }}  \
               --token ${{ secrets.tb_admin_token }}  \
-              env create tmp_cd_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
+              env create tmp_ci_${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }} \
               ${_ENV_FLAGS}
 
       - name: List changes with Workspace (should be empty)
@@ -139,7 +140,7 @@ jobs:
           tb \
           --host ${{ secrets.tb_host }} \
           --token ${{ secrets.tb_admin_token }} \
-          env rm tmp_cd_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
+          env rm tmp_ci_${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }} \
           --yes
 
   release_promote:

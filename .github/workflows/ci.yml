@@ -9,6 +9,11 @@ on:
         required: false
         type: string
         default: .
+      cleanup:
+        description: "set to true to clean up the CI Environment after the ci_branching job, otherwise the CI Environment is left to debug any possible issue"
+        required: false
+        type: boolean
+        default: false
     secrets:
       tb_admin_token:
         required: true
@@ -43,6 +48,7 @@ jobs:
           source .tinyenv
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
           echo "_ENV_FLAGS=$_ENV_FLAGS" >> $GITHUB_ENV
+          echo "_NORMALIZED_ENV_NAME=$_NORMALIZED_ENV_NAME" >> $GITHUB_ENV
       - name: Install Tinybird CLI
         run: pip install tinybird-cli
 
@@ -55,12 +61,28 @@ jobs:
       - name: Check auth
         run: tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} auth info
 
+      - name: Try delete previous Environment
+        run: |
+          output=$(tb env ls)
+          ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }}"
+
+          # Check if the environment name exists in the output
+          if [[ $output == *"$ENVIRONMENT_NAME"* ]]; then
+              tb \
+                --host ${{ vars.TB_HOST }} \
+                --token ${{ secrets.TINYBIRD_WORKSPACE_TOKEN }} \
+                env rm $ENVIRONMENT_NAME \
+                --yes
+          else
+              echo "Skipping clean up: The Environment '$ENVIRONMENT_NAME' does not exist."
+          fi
+
       - name: Create new test Environment with data
         run: |
           tb \
           --host ${{ secrets.tb_host }} \
           --token ${{ secrets.tb_admin_token }} \
-          env create tmp_ci_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
+          env create tmp_ci_${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }} \
           ${_ENV_FLAGS}
 
       - name: List changes with Main Environment
@@ -107,7 +129,7 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.data_project_dir }}
-    if: ${{ always() }}
+    if: ${{ inputs.cleanup}}
     needs: [ci_branching]
     steps:
       - uses: actions/checkout@master
@@ -131,5 +153,5 @@ jobs:
           tb \
           --host ${{ secrets.tb_host }} \
           --token ${{ secrets.tb_admin_token }} \
-          env rm tmp_ci_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
+          env rm tmp_ci_${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }} \
           --yes
