@@ -26,6 +26,7 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.data_project_dir }}
+    if: ${{ github.event.action != 'closed' }}
     steps:
       - uses: actions/checkout@master
         with:
