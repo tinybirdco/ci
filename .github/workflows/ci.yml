@@ -50,7 +50,7 @@ jobs:
           echo "_ENV_FLAGS=$_ENV_FLAGS" >> $GITHUB_ENV
           echo "_NORMALIZED_ENV_NAME=$_NORMALIZED_ENV_NAME" >> $GITHUB_ENV
       - name: Install Tinybird CLI
-        run: pip install tinybird-cli
+        run: pip install tinybird-cli==1.0.1.dev1
 
       - name: Tinybird version
         run: tb --version       
