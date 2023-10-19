@@ -69,8 +69,8 @@ jobs:
           # Check if the environment name exists in the output
           if [[ $output == *"$ENVIRONMENT_NAME"* ]]; then
               tb \
-                --host ${{ vars.TB_HOST }} \
-                --token ${{ secrets.TINYBIRD_WORKSPACE_TOKEN }} \
+                --host ${{ secrets.tb_host }} \
+                --token ${{ secrets.tb_admin_token }} \
                 env rm $ENVIRONMENT_NAME \
                 --yes
           else

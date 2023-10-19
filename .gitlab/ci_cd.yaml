@@ -54,8 +54,8 @@ variables:
       # Check if the environment name exists in the output
       if [[ $output == *"$ENVIRONMENT_NAME"* ]]; then
           tb \
-            --host ${{ vars.TB_HOST }} \
-            --token ${{ secrets.TINYBIRD_WORKSPACE_TOKEN }} \
+            --host $TB_HOST \
+            --token $TB_ADMIN_TOKEN \
             env rm $ENVIRONMENT_NAME \
             --yes
       else
