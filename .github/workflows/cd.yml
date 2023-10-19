@@ -90,7 +90,7 @@ jobs:
       - name: Deploy changes to the main Workspace
         run: |
             source .tinyenv
-            if ${{ inputs.tb_deploy}}; then      
+            if ${{ inputs.tb_deploy }}; then
               tb env deploy --semver ${VERSION} --wait
               tb release ls
             else
@@ -144,7 +144,7 @@ jobs:
           --yes
 
   release_promote:
-    if: ${{ inputs.tb_deploy}}
+    if: ${{ inputs.tb_deploy && github.event.workflow_dispatch }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -177,7 +177,7 @@ jobs:
           --semver $VERSION
 
   release_rollback:
-    if: ${{ inputs.tb_deploy}}
+    if: ${{ inputs.tb_deploy && github.event.workflow_dispatch }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -209,7 +209,7 @@ jobs:
           release rollback
 
   release_rm:
-    if: ${{ inputs.tb_deploy}}
+    if: ${{ inputs.tb_deploy && github.event.workflow_dispatch }}
     runs-on: ubuntu-latest
     defaults:
       run:
