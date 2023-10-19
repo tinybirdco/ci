@@ -49,7 +49,7 @@ variables:
     - tb check
 
     # Check auth
-    tb --host $TB_HOST --token $TB_ADMIN_TOKEN auth info
+    - tb --host $TB_HOST --token $TB_ADMIN_TOKEN auth info
 
     # Try delete previous Environment
     - |
