@@ -57,7 +57,7 @@ variables:
       ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${CI_MERGE_REQUEST_IID}"
 
       # Check if the environment name exists in the output
-      if [[ $output == *"$ENVIRONMENT_NAME"* ]]; then
+      if echo "$output" | grep -q "\b$ENVIRONMENT_NAME\b"; then
           tb \
             --host $TB_HOST \
             --token $TB_ADMIN_TOKEN \

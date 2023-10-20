@@ -69,7 +69,7 @@ jobs:
           ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }}"
 
           # Check if the environment name exists in the output
-          if [[ $output == *"$ENVIRONMENT_NAME"* ]]; then
+          if echo "$output" | grep -q "\b$ENVIRONMENT_NAME\b"; then
               tb \
                 --host ${{ secrets.tb_host }} \
                 --token ${{ secrets.tb_admin_token }} \
@@ -161,7 +161,7 @@ jobs:
           ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }}"
 
           # Check if the environment name exists in the output
-          if [[ $output == *"$ENVIRONMENT_NAME"* ]]; then
+          if echo "$output" | grep -q "\b$ENVIRONMENT_NAME\b"; then
               tb \
                 --host ${{ secrets.tb_host }} \
                 --token ${{ secrets.tb_admin_token }} \
