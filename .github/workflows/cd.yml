@@ -49,9 +49,15 @@ jobs:
           source .tinyenv
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
           echo "_ENV_FLAGS=$_ENV_FLAGS" >> $GITHUB_ENV
+          echo "_NORMALIZED_ENV_NAME=$_NORMALIZED_ENV_NAME" >> $GITHUB_ENV
 
       - name: Install Tinybird CLI
-        run: pip install tinybird-cli
+        run: |
+          if [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+          else
+            pip install tinybird-cli
+          fi
 
       - name: Tinybird version
         run: tb --version
@@ -89,7 +95,7 @@ jobs:
       - name: Deploy changes to the main Workspace
         run: |
             source .tinyenv
-            if ${{ inputs.tb_deploy}}; then      
+            if ${{ inputs.tb_deploy }}; then
               tb env deploy --semver ${VERSION} --wait
               tb release ls
             else
@@ -129,7 +135,12 @@ jobs:
           [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Go to the tokens section in your Workspace, copy the 'admin token (user@domain.com)' associated to a user account and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1; }
 
       - name: Install Tinybird CLI
-        run: pip install tinybird-cli
+        run: |
+          if [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+          else
+            pip install tinybird-cli
+          fi
 
       - name: Tinybird version
         run: tb --version       
@@ -143,7 +154,7 @@ jobs:
           --yes
 
   release_promote:
-    if: ${{ inputs.tb_deploy}}
+    if: ${{ inputs.tb_deploy && github.event.workflow_dispatch }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -161,7 +172,12 @@ jobs:
           [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Go to the tokens section in your Workspace, copy the 'admin token (user@domain.com)' associated to a user account and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1; }
 
       - name: Install Tinybird CLI
-        run: pip install tinybird-cli
+        run: |
+          if [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+          else
+            pip install tinybird-cli
+          fi
 
       - name: Tinybird version
         run: tb --version
@@ -176,7 +192,7 @@ jobs:
           --semver $VERSION
 
   release_rollback:
-    if: ${{ inputs.tb_deploy}}
+    if: ${{ inputs.tb_deploy && github.event.workflow_dispatch }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -194,7 +210,12 @@ jobs:
           [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Go to the tokens section in your Workspace, copy the 'admin token (user@domain.com)' associated to a user account and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1; }
 
       - name: Install Tinybird CLI
-        run: pip install tinybird-cli
+        run: |
+          if [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+          else
+            pip install tinybird-cli
+          fi
 
       - name: Tinybird version
         run: tb --version
@@ -208,7 +229,7 @@ jobs:
           release rollback
 
   release_rm:
-    if: ${{ inputs.tb_deploy}}
+    if: ${{ inputs.tb_deploy && github.event.workflow_dispatch }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -226,7 +247,12 @@ jobs:
           [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Go to the tokens section in your Workspace, copy the 'admin token (user@domain.com)' associated to a user account and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1; }
 
       - name: Install Tinybird CLI
-        run: pip install tinybird-cli
+        run: |
+          if [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+          else
+            pip install tinybird-cli
+          fi
 
       - name: Tinybird version
         run: tb --version

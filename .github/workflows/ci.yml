@@ -21,6 +21,7 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.data_project_dir }}
+    if: ${{ github.event.action != 'closed' }}
     steps:
       - uses: actions/checkout@master
         with:
@@ -43,8 +44,15 @@ jobs:
           source .tinyenv
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
           echo "_ENV_FLAGS=$_ENV_FLAGS" >> $GITHUB_ENV
+          echo "_NORMALIZED_ENV_NAME=$_NORMALIZED_ENV_NAME" >> $GITHUB_ENV
+
       - name: Install Tinybird CLI
-        run: pip install tinybird-cli
+        run: |
+          if [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+          else
+            pip install tinybird-cli
+          fi
 
       - name: Tinybird version
         run: tb --version       
@@ -55,12 +63,28 @@ jobs:
       - name: Check auth
         run: tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} auth info
 
+      - name: Try delete previous Environment
+        run: |
+          output=$(tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} env ls)
+          ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }}"
+
+          # Check if the environment name exists in the output
+          if echo "$output" | grep -q "\b$ENVIRONMENT_NAME\b"; then
+              tb \
+                --host ${{ secrets.tb_host }} \
+                --token ${{ secrets.tb_admin_token }} \
+                env rm $ENVIRONMENT_NAME \
+                --yes
+          else
+              echo "Skipping clean up: The Environment '$ENVIRONMENT_NAME' does not exist."
+          fi
+
       - name: Create new test Environment with data
         run: |
           tb \
           --host ${{ secrets.tb_host }} \
           --token ${{ secrets.tb_admin_token }} \
-          env create tmp_ci_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
+          env create tmp_ci_${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }} \
           ${_ENV_FLAGS}
 
       - name: List changes with Main Environment
@@ -98,6 +122,7 @@ jobs:
 
       - name: Run pipe regression tests
         run: |
+          source .tinyenv
           echo ${{ steps.regression_labels.outputs.labels }}
           REGRESSION_LABELS=$(echo "${{ steps.regression_labels.outputs.labels }}" | awk -F, '{for (i=1; i<=NF; i++) if ($i ~ /^--/) print $i}' ORS=',' | sed 's/,$//')
           echo ${REGRESSION_LABELS}
@@ -107,8 +132,7 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.data_project_dir }}
-    if: ${{ always() }}
-    needs: [ci_branching]
+    if: ${{ github.event.action == 'closed' }}
     steps:
       - uses: actions/checkout@master
       - uses: actions/setup-python@v3
@@ -121,15 +145,28 @@ jobs:
           [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Go to the tokens section in your Workspace, copy the 'admin token (user@domain.com)' associated to a user account and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1; }
 
       - name: Install Tinybird CLI
-        run: pip install tinybird-cli
+        run: |
+          if [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+          else
+            pip install tinybird-cli
+          fi
 
       - name: Tinybird version
         run: tb --version       
 
-      - name: Drop test Environment
+      - name: Try delete previous Environment
         run: |
-          tb \
-          --host ${{ secrets.tb_host }} \
-          --token ${{ secrets.tb_admin_token }} \
-          env rm tmp_ci_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
-          --yes
+          output=$(tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} env ls)
+          ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }}"
+
+          # Check if the environment name exists in the output
+          if echo "$output" | grep -q "\b$ENVIRONMENT_NAME\b"; then
+              tb \
+                --host ${{ secrets.tb_host }} \
+                --token ${{ secrets.tb_admin_token }} \
+                env rm $ENVIRONMENT_NAME \
+                --yes
+          else
+              echo "Skipping clean up: The Environment '$ENVIRONMENT_NAME' does not exist."
+          fi
