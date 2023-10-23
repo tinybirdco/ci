@@ -54,7 +54,8 @@ variables:
     # Try delete previous Environment
     - |
       output=$(tb --host $TB_HOST --token $TB_ADMIN_TOKEN env ls)
-      ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${CI_MERGE_REQUEST_IID}"
+      AUTHOR=$(echo "$CI_COMMIT_AUTHOR" | sed -E 's/[^a-zA-Z0-9]//g')
+      ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${AUTHOR}"
 
       # Check if the environment name exists in the output
       if echo "$output" | grep -q "\b$ENVIRONMENT_NAME\b"; then
@@ -72,7 +73,7 @@ variables:
       tb \
         --host $TB_HOST \
         --token $TB_ADMIN_TOKEN \
-        env create tmp_ci_${_NORMALIZED_ENV_NAME}_${CI_MERGE_REQUEST_IID} \
+        env create ${ENVIRONMENT_NAME} \
         ${_ENV_FLAGS}
 
     # List changes with Main Environment
@@ -187,6 +188,8 @@ variables:
     - *validate_input
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
     - _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
+    - AUTHOR=$(echo "$CI_COMMIT_AUTHOR" | sed -E 's/[^a-zA-Z0-9]//g')
+    - ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${AUTHOR}"
 
     # Create Python Virtual Environment
     - python -m venv .venv
@@ -208,7 +211,7 @@ variables:
       tb \
       --host $TB_HOST \
       --token $TB_ADMIN_TOKEN \
-      env rm tmp_ci_${_NORMALIZED_ENV_NAME}_${CI_MERGE_REQUEST_IID} \
+      env rm ${ENVIRONMENT_NAME} \
       --yes
 
 .cleanup_cd_branch:
