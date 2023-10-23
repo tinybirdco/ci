@@ -18,3 +18,4 @@ Next release
     ```
 - If you have doubts when updating just drop the .github or .gitlab-ci.yml workflow and re-run `tb init --git` using the latest version of `tinybird-cli` to re-generate the CI/CD templates.
 - `.tinyenv` now supports `export OBFUSCATE_REGEX_PATTERN=<regex>` to have a list of regex separated by `|` to obfuscate the output of regression tests. It requires version 1.0.1 of tinybird-cli.
+- `.tinyenv` variables written to `GITHUB_ENV` to make them available in all GitHub Actions workflow
