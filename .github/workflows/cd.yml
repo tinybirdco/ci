@@ -46,7 +46,7 @@ jobs:
           _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
           _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
           GIT_BRANCH=${GITHUB_HEAD_REF}
-          source .tinyenv
+          cat .tinyenv >> $GITHUB_ENV
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
           echo "_ENV_FLAGS=$_ENV_FLAGS" >> $GITHUB_ENV
           echo "_NORMALIZED_ENV_NAME=$_NORMALIZED_ENV_NAME" >> $GITHUB_ENV
@@ -81,7 +81,6 @@ jobs:
 
       - name: Push changes to the test Environment
         run: |
-            source .tinyenv
             CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
             if [ -f "$CI_DEPLOY_FILE" ]; then
               ./deploy/${VERSION}/ci-deploy.sh
@@ -94,7 +93,6 @@ jobs:
 
       - name: Deploy changes to the main Workspace
         run: |
-            source .tinyenv
             if ${{ inputs.tb_deploy }}; then
               tb env deploy --semver ${VERSION} --wait
               tb release ls
@@ -110,7 +108,6 @@ jobs:
 
       - name: run post CD deploy commands
         run: |
-            source .tinyenv
             CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
             if [ -f "$CD_DEPLOY_FILE" ]; then
               ./deploy/${VERSION}/cd-deploy.sh
