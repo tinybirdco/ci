@@ -1,5 +1,8 @@
-Next release
-============
+Next Release
+=============
+
+v2.3.0
+======
 
 - Support for a `requirements.txt` file inside the Data Project folder. That way you can control which version of the `tinybird-cli` to install.
 - Environments in CI are now created with a fixed name using the Pull Request number.
