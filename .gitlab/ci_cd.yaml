@@ -83,6 +83,7 @@ variables:
     - |
       CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
       if [ -f "$CI_DEPLOY_FILE" ]; then
+        chmod +x deploy/${VERSION}/ci-deploy.sh
         ./deploy/${VERSION}/ci-deploy.sh
       else
         tb deploy --populate --fixtures --wait
