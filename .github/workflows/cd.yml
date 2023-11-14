@@ -83,7 +83,8 @@ jobs:
         run: |
             CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
             if [ -f "$CI_DEPLOY_FILE" ]; then
-              ./deploy/${VERSION}/ci-deploy.sh
+              chmod +x $CI_DEPLOY_FILE
+              $CI_DEPLOY_FILE
             else
               tb deploy --populate --fixtures --wait
             fi
@@ -110,7 +111,8 @@ jobs:
         run: |
             CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
             if [ -f "$CD_DEPLOY_FILE" ]; then
-              ./deploy/${VERSION}/cd-deploy.sh
+              chmod +x $CD_DEPLOY_FILE
+              $CD_DEPLOY_FILE
             fi
 
   cleanup:
