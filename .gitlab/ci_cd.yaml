@@ -83,7 +83,12 @@ variables:
     - |
       CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
       if [ -f "$CI_DEPLOY_FILE" ]; then
-        ./deploy/${VERSION}/ci-deploy.sh
+        if ! [[ -x "$CI_DEPLOY_FILE" ]]; then
+          echo "Error: You do not have permission to execute '$CI_DEPLOY_FILE'. Run:"
+          echo "> chmod +x $CI_DEPLOY_FILE"
+          echo "and commit your changes"
+        else
+          $CI_DEPLOY_FILE
       else
         tb deploy --populate --fixtures --wait
       fi
@@ -151,7 +156,12 @@ variables:
     - |
       CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
       if [ -f "$CI_DEPLOY_FILE" ]; then
-        ./deploy/${VERSION}/ci-deploy.sh
+        if ! [[ -x "$CI_DEPLOY_FILE" ]]; then
+          echo "Error: You do not have permission to execute '$CI_DEPLOY_FILE'. Run:"
+          echo "> chmod +x $CI_DEPLOY_FILE"
+          echo "and commit your changes"
+        else
+          $CI_DEPLOY_FILE
       else
         tb deploy --populate --fixtures --wait
       fi
@@ -178,7 +188,12 @@ variables:
     - |
       CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
       if [ -f "$CD_DEPLOY_FILE" ]; then
-        ./deploy/${VERSION}/cd-deploy.sh
+        if ! [[ -x "$CD_DEPLOY_FILE" ]]; then
+          echo "Error: You do not have permission to execute '$CD_DEPLOY_FILE'. Run:"
+          echo "> chmod +x $CD_DEPLOY_FILE"
+          echo "and commit your changes"
+        else
+          $CD_DEPLOY_FILE
       fi
 
 .cleanup_ci_branch:
