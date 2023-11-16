@@ -87,6 +87,7 @@ variables:
           echo "Error: You do not have permission to execute '$CI_DEPLOY_FILE'. Run:"
           echo "> chmod +x $CI_DEPLOY_FILE"
           echo "and commit your changes"
+          exit 1
         else
           $CI_DEPLOY_FILE
       else
@@ -160,6 +161,7 @@ variables:
           echo "Error: You do not have permission to execute '$CI_DEPLOY_FILE'. Run:"
           echo "> chmod +x $CI_DEPLOY_FILE"
           echo "and commit your changes"
+          exit 1
         else
           $CI_DEPLOY_FILE
       else
@@ -192,6 +194,7 @@ variables:
           echo "Error: You do not have permission to execute '$CD_DEPLOY_FILE'. Run:"
           echo "> chmod +x $CD_DEPLOY_FILE"
           echo "and commit your changes"
+          exit 1
         else
           $CD_DEPLOY_FILE
       fi
