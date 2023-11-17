@@ -95,13 +95,14 @@ jobs:
           source .tinyenv
           CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
           if [ -f "$CI_DEPLOY_FILE" ]; then
-            if ! [[ -x "$CI_DEPLOY_FILE" ]]; then
+            if ! [ -x "$CI_DEPLOY_FILE" ]; then
                 echo "Error: You do not have permission to execute '$CI_DEPLOY_FILE'. Run:"
                 echo "> chmod +x $CI_DEPLOY_FILE"
                 echo "and commit your changes"
                 exit 1
               else
                 $CI_DEPLOY_FILE
+              fi
           else
             tb deploy --populate --fixtures --wait
           fi
