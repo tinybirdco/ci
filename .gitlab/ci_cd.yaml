@@ -153,6 +153,9 @@ variables:
     # Check all the data files syntax
     - tb check
 
+    # Check auth info
+    - tb --host $TB_HOST --token $TB_ADMIN_TOKEN auth info
+
     # Deploy changes to the main Workspace
     - |
       if [ "$TB_DEPLOY" = "true" ]; then
