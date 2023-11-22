@@ -1,0 +1,123 @@
+name: Tinybird Release
+
+on:
+  workflow_call:
+    inputs:
+      job_to_run:
+        description: 'Select the job to run manually'
+        required: true
+        type: string
+        default: 'promote'
+      data_project_dir:
+        description: "relative path of the folder containing the data project"
+        required: false
+        type: string
+        default: .
+    secrets:
+      tb_admin_token:
+        required: true
+      tb_host:
+        required: true
+
+jobs:
+  promote:
+    if: inputs.job_to_run == 'promote'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.data_project_dir }}
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.8"
+          architecture: "x64"
+
+      - name: Validate input
+        run: |
+          [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Go to the tokens section in your Workspace, copy the 'admin token (user@domain.com)' associated to a user account and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1; }
+      - name: Install Tinybird CLI
+        run: |
+          if [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+          else
+            pip install tinybird-cli
+          fi
+      - name: Tinybird version
+        run: tb --version
+
+      - name: Promote Release
+        run: |
+          source .tinyenv
+          tb \
+          --host ${{ secrets.tb_host }} \
+          --token ${{ secrets.tb_admin_token }} \
+          release promote \
+          --semver $VERSION
+  rollback:
+    runs-on: ubuntu-latest
+    if: inputs.job_to_run == 'rollback'
+    defaults:
+      run:
+        working-directory: ${{ inputs.data_project_dir }}
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.8"
+          architecture: "x64"
+
+      - name: Validate input
+        run: |
+          [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Go to the tokens section in your Workspace, copy the 'admin token (user@domain.com)' associated to a user account and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1; }
+      - name: Install Tinybird CLI
+        run: |
+          if [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+          else
+            pip install tinybird-cli
+          fi
+      - name: Tinybird version
+        run: tb --version
+
+      - name: Promote Release
+        run: |
+          source .tinyenv
+          tb \
+          --host ${{ secrets.tb_host }} \
+          --token ${{ secrets.tb_admin_token }} \
+          release rollback
+  rm:
+    runs-on: ubuntu-latest
+    if: inputs.job_to_run == 'rm'
+    defaults:
+      run:
+        working-directory: ${{ inputs.data_project_dir }}
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.8"
+          architecture: "x64"
+
+      - name: Validate input
+        run: |
+          [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Go to the tokens section in your Workspace, copy the 'admin token (user@domain.com)' associated to a user account and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1; }
+      - name: Install Tinybird CLI
+        run: |
+          if [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+          else
+            pip install tinybird-cli
+          fi
+      - name: Tinybird version
+        run: tb --version
+
+      - name: Promote Release
+        run: |
+          source .tinyenv
+          tb \
+          --host ${{ secrets.tb_host }} \
+          --token ${{ secrets.tb_admin_token }} \
+          release rm \
+          --semver $VERSION
