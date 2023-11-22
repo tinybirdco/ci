@@ -1,6 +1,9 @@
 Next Release
 =============
 
+- Fix manual jobs for v3 releases on GitHub
+
+
 v2.3.0
 ======
 
