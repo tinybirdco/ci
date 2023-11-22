@@ -68,40 +68,12 @@ jobs:
       - name: Check auth
         run: tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} auth info
 
-      - name: Create new test Environment with data
-        run: |
-            tb \
-              --host ${{ secrets.tb_host }}  \
-              --token ${{ secrets.tb_admin_token }}  \
-              env create tmp_cd_${_NORMALIZED_ENV_NAME}_${GITHUB_RUN_ID} \
-              ${_ENV_FLAGS}
-
-      - name: List changes with Workspace (should be empty)
-        run: tb diff --main --no-verbose
-
-      - name: Push changes to the test Environment
-        run: |
-            CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
-            if [ -f "$CI_DEPLOY_FILE" ]; then
-              if ! [ -x "$CI_DEPLOY_FILE" ]; then
-                echo "Error: You do not have permission to execute '$CI_DEPLOY_FILE'. Run:"
-                echo "> chmod +x $CI_DEPLOY_FILE"
-                echo "and commit your changes"
-                exit 1
-              else
-                $CI_DEPLOY_FILE
-              fi
-            else
-              tb deploy --populate --fixtures --wait
-            fi
-
-      - name: List changes with test Environment (should be empty)
-        run: tb diff
-
       - name: Deploy changes to the main Workspace
         run: |
             if ${{ inputs.tb_deploy }}; then
-              tb env deploy --semver ${VERSION} --wait
+              tb release create --semver ${VERSION}
+              tb --semver ${VERSION} deploy 
+              tb release preview --semver ${VERSION}
               tb release ls
             else
               tb auth \
