@@ -115,6 +115,9 @@ jobs:
 
       - name: run post CD deploy commands
         run: |
+            tb auth \
+              --host ${{ secrets.tb_host }} \
+              --token ${{ secrets.tb_admin_token }}
             CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
             if [ -f "$CD_DEPLOY_FILE" ]; then
               if ! [ -x "$CD_DEPLOY_FILE" ]; then
