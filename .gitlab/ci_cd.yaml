@@ -226,6 +226,9 @@ variables:
 .release_promote:
   stage: release
   image: ${IMAGE_BASE}
+  only:
+    variables:
+      - $TB_DEPLOY == "true"
   script:
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
 
@@ -256,6 +259,9 @@ variables:
 .release_rollback:
   stage: release
   image: ${IMAGE_BASE}
+  only:
+    variables:
+      - $TB_DEPLOY == "true"
   script:
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
 
@@ -285,6 +291,9 @@ variables:
 .release_rm:
   stage: release
   image: ${IMAGE_BASE}
+  only:
+    variables:
+      - $TB_DEPLOY == "true"
   script:
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
 

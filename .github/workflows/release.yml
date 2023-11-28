@@ -21,7 +21,7 @@ on:
 
 jobs:
   promote:
-    if: inputs.job_to_run == 'promote'
+    if: inputs.job_to_run == 'promote' && inputs.tb_deploy == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -56,7 +56,7 @@ jobs:
           --semver $VERSION
   rollback:
     runs-on: ubuntu-latest
-    if: inputs.job_to_run == 'rollback'
+    if: inputs.job_to_run == 'rollback' && inputs.tb_deploy == 'true'
     defaults:
       run:
         working-directory: ${{ inputs.data_project_dir }}
@@ -89,7 +89,7 @@ jobs:
           release rollback
   rm:
     runs-on: ubuntu-latest
-    if: inputs.job_to_run == 'rm'
+    if: inputs.job_to_run == 'rm' && inputs.tb_deploy == 'true'
     defaults:
       run:
         working-directory: ${{ inputs.data_project_dir }}
