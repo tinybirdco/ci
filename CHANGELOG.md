@@ -1,8 +1,13 @@
 Next Release
 =============
 
+- 
+
+v2.4.0
+=======
+
 - Fix manual jobs for v3 releases on GitHub
-- Fix: Do `tb auth` before a custom deployment in the CD templates
+- Fix: Do `tb auth` before a custom deployment in the CD templates. Custom deployments where not working in v2.3.0, users in this version of the CD template need to update to v2.4.0.
 
 
 v2.3.0
