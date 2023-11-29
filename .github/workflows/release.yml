@@ -13,6 +13,11 @@ on:
         required: false
         type: string
         default: .
+      tb_deploy:
+        description: "use tb deploy based on git releases"
+        required: false
+        type: boolean
+        default: false
     secrets:
       tb_admin_token:
         required: true
