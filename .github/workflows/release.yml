@@ -85,7 +85,7 @@ jobs:
       - name: Tinybird version
         run: tb --version
 
-      - name: Promote Release
+      - name: Rollback Release
         run: |
           source .tinyenv
           tb \
@@ -118,11 +118,11 @@ jobs:
       - name: Tinybird version
         run: tb --version
 
-      - name: Promote Release
+      - name: Remove Release
         run: |
           source .tinyenv
           tb \
           --host ${{ secrets.tb_host }} \
           --token ${{ secrets.tb_admin_token }} \
-          release rm \
-          --semver $VERSION
+          release rm  \
+          --semver $VERSION --force --yes

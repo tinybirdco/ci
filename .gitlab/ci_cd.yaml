@@ -312,4 +312,4 @@ variables:
       tb \
       --host $TB_HOST \
       --token $TB_ADMIN_TOKEN \
-      release rm --semver $VERSION
+      release rm --semver $VERSION --force --yes
