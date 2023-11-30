@@ -104,7 +104,7 @@ jobs:
                 tb release create --semver ${VERSION}
                 tb --semver ${VERSION} deploy
                 tb release preview --semver ${VERSION}
-                tb release promote
+                tb release promote --semver ${VERSION}
                 tb release ls
               else
                 tb deploy --populate --fixtures --wait
