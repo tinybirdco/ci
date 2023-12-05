@@ -111,7 +111,7 @@ variables:
     - REGRESSION_LABELS=$(echo "${CI_MERGE_REQUEST_LABELS}" | awk -F, '{for (i=1; i<=NF; i++) if ($i ~ /^--/) print $i}' ORS=',' | sed 's/,$//')
     - echo ${REGRESSION_LABELS}
     - |
-      CONFIG_FILE=./tests/regression_config.yaml
+      CONFIG_FILE=./tests/regression.yaml
       BASE_CMD="tb env regression-tests"
       LABELS_CMD="$(echo ${REGRESSION_LABELS} | tr , ' ')"
       if [ -f ${CONFIG_FILE} ]; then

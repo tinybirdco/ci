@@ -4,7 +4,7 @@ Next Release
 v2.5.0
 =======
 
-- Support for `./tests/regression_config.yaml` inside the Data Project folder. More information [here](https://www.tinybird.co/docs/guides/continuous-integration.html#testing-strategies).
+- Support for `./tests/regression.yaml` inside the Data Project folder. More information [here](https://www.tinybird.co/docs/guides/continuous-integration.html#testing-strategies).
 
 v2.4.0
 =======
