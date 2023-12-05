@@ -135,14 +135,14 @@ jobs:
           echo ${REGRESSION_LABELS}
 
           CONFIG_FILE=./tests/regression_config.yaml
-          COMMON_CMD="tb env regression-tests coverage --wait $(echo ${REGRESSION_LABELS} | tr , ' ')"
-
+          BASE_CMD="tb env regression-tests"
+          COVERAGE_CMD = "coverage --wait $(echo ${REGRESSION_LABELS} | tr , ' ')"
           if [ -f ${CONFIG_FILE} ]; then
               echo "Config file found: ${CONFIG_FILE}"
-              ${COMMON_CMD} -f ${CONFIG_FILE}
+              ${COMMON_CMD} -f ${CONFIG_FILE} ${COVERAGE_CMD}
           else
               echo "Config file not found at '${CONFIG_FILE}', running with default values"
-              ${COMMON_CMD}
+              ${BASE_CMD} ${COVERAGE_CMD}
           fi
   cleanup:
     runs-on: ubuntu-latest
