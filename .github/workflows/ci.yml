@@ -133,7 +133,17 @@ jobs:
           echo ${{ steps.regression_labels.outputs.labels }}
           REGRESSION_LABELS=$(echo "${{ steps.regression_labels.outputs.labels }}" | awk -F, '{for (i=1; i<=NF; i++) if ($i ~ /^--/) print $i}' ORS=',' | sed 's/,$//')
           echo ${REGRESSION_LABELS}
-          tb env regression-tests coverage --wait $(echo ${REGRESSION_LABELS} | tr , ' ')
+
+          CONFIG_FILE=./tests/regression.yaml
+          BASE_CMD="tb env regression-tests"
+          LABELS_CMD="$(echo ${REGRESSION_LABELS} | tr , ' ')"
+          if [ -f ${CONFIG_FILE} ]; then
+              echo "Config file found: ${CONFIG_FILE}"
+              ${BASE_CMD} -f ${CONFIG_FILE} --wait ${LABELS_CMD}
+          else
+              echo "Config file not found at '${CONFIG_FILE}', running with default values"
+              ${BASE_CMD} coverage --wait ${LABELS_CMD}
+          fi
   cleanup:
     runs-on: ubuntu-latest
     defaults:
