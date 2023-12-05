@@ -116,7 +116,7 @@ variables:
       COVERAGE_CMD ="coverage --wait $(echo ${REGRESSION_LABELS} | tr , ' ')"
       if [ -f ${CONFIG_FILE} ]; then
           echo "Config file found: ${CONFIG_FILE}"
-          ${COMMON_CMD} -f ${CONFIG_FILE} ${COVERAGE_CMD}
+          ${BASE_CMD} -f ${CONFIG_FILE} ${COVERAGE_CMD}
       else
           echo "Config file not found at '${CONFIG_FILE}', running with default values"
           ${BASE_CMD} ${COVERAGE_CMD}
