@@ -110,7 +110,17 @@ variables:
     - echo ${CI_MERGE_REQUEST_LABELS}
     - REGRESSION_LABELS=$(echo "${CI_MERGE_REQUEST_LABELS}" | awk -F, '{for (i=1; i<=NF; i++) if ($i ~ /^--/) print $i}' ORS=',' | sed 's/,$//')
     - echo ${REGRESSION_LABELS}
-    - tb env regression-tests coverage --wait $(echo ${REGRESSION_LABELS} | tr , ' ')
+    - |
+      CONFIG_FILE=./tests/regression_config.yaml
+      COMMON_CMD="tb env regression-tests coverage --wait $(echo ${REGRESSION_LABELS} | tr , ' ')"
+
+      if [ -f ${CONFIG_FILE} ]; then
+          echo "Config file found: ${CONFIG_FILE}"
+          ${COMMON_CMD} -f ${CONFIG_FILE}
+      else
+          echo "Config file not found at '${CONFIG_FILE}', running with default values"
+          ${COMMON_CMD}
+      fi
 
 .run_cd:
   stage: cd
