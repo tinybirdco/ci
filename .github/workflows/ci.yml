@@ -136,7 +136,7 @@ jobs:
 
           CONFIG_FILE=./tests/regression_config.yaml
           BASE_CMD="tb env regression-tests"
-          COVERAGE_CMD = "coverage --wait $(echo ${REGRESSION_LABELS} | tr , ' ')"
+          COVERAGE_CMD="coverage --wait $(echo ${REGRESSION_LABELS} | tr , ' ')"
           if [ -f ${CONFIG_FILE} ]; then
               echo "Config file found: ${CONFIG_FILE}"
               ${COMMON_CMD} -f ${CONFIG_FILE} ${COVERAGE_CMD}
