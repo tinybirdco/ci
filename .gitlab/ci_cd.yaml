@@ -79,7 +79,22 @@ variables:
     # List changes with Main Environment
     - tb diff --main --no-verbose
 
-    # Push changes to the test Environment
+    # Deploy changes to the test Environment
+    - |
+      CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
+      if [ ! -f "$CI_DEPLOY_FILE" ]; then
+        if ${{ inputs.tb_deploy }}; then
+          tb release create --semver ${VERSION}
+          tb --semver ${VERSION} deploy --fixtures --populate --wait
+          tb release preview --semver ${VERSION}
+          tb release promote --semver ${VERSION}
+          tb release ls
+        else
+          tb deploy --populate --fixtures --wait
+        fi
+      fi
+
+    # Custom deployment to the test Environment
     - |
       CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
       if [ -f "$CI_DEPLOY_FILE" ]; then
@@ -91,8 +106,6 @@ variables:
         else
           $CI_DEPLOY_FILE
         fi
-      else
-        tb deploy --populate --fixtures --wait
       fi
 
     # List changes with test Environment (should be empty)
@@ -153,56 +166,25 @@ variables:
     # Check all the data files syntax
     - tb check
 
-    # Create new test Environment with data
-    - |
-      tb \
-        --host $TB_HOST \
-        --token $TB_ADMIN_TOKEN \
-        env create tmp_cd_${_NORMALIZED_ENV_NAME}_${CI_COMMIT_SHORT_SHA} \
-        ${_ENV_FLAGS}
-
-    # List changes with Main Environment
-    - tb diff --main --no-verbose
-
-    # Push changes to the test Environment
-    - |
-      CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
-      if [ -f "$CI_DEPLOY_FILE" ]; then
-        if ! [ -x "$CI_DEPLOY_FILE" ]; then
-          echo "Error: You do not have permission to execute '$CI_DEPLOY_FILE'. Run:"
-          echo "> chmod +x $CI_DEPLOY_FILE"
-          echo "and commit your changes"
-          exit 1
-        else
-          $CI_DEPLOY_FILE
-        fi
-      else
-        tb deploy --populate --fixtures --wait
-      fi
-
-    # List changes with test Environment (should be empty)
-    - tb diff
+    # Check auth info
+    - tb --host $TB_HOST --token $TB_ADMIN_TOKEN auth info
 
     # Deploy changes to the main Workspace
     - |
-      if [ "$TB_DEPLOY" = "true" ]; then
-        tb env deploy --semver ${VERSION} --wait
-        tb release ls
-      else
-        CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
-        if [ ! -f "$CD_DEPLOY_FILE" ]; then
-          tb auth \
-            --host $TB_HOST \
-            --token $TB_ADMIN_TOKEN
+      CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
+      if [ ! -f "$CD_DEPLOY_FILE" ]; then
+        if [ "$TB_DEPLOY" = "true" ]; then
+          tb release create --semver ${VERSION}
+          tb --semver ${VERSION} deploy 
+          tb release preview --semver ${VERSION}
+          tb release ls
+        else
           tb deploy
         fi
       fi
 
-    # OPTIONALLY run post CD deploy commands (e.g.: tb pipe populate)
+    # OPTIONALLY Custom deployment to main Workspace. Useful for post CD deploy commands (e.g.: tb pipe populate)
     - |
-      tb auth \
-        --host $TB_HOST \
-        --token $TB_ADMIN_TOKEN
       CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
       if [ -f "$CD_DEPLOY_FILE" ]; then
         if ! [ -x "$CD_DEPLOY_FILE" ]; then
@@ -246,37 +228,6 @@ variables:
       --host $TB_HOST \
       --token $TB_ADMIN_TOKEN \
       env rm ${ENVIRONMENT_NAME} \
-      --yes
-
-.cleanup_cd_branch:
-  stage: cleanup
-  image: ${IMAGE_BASE}
-  script:
-    - *validate_input
-    - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
-    - _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
-
-    # Create Python Virtual Environment
-    - python -m venv .venv
-    - source .venv/bin/activate
-
-    # Install Tinybird CLI
-    - |
-      if [ -f "requirements.txt" ]; then
-        pip install -r requirements.txt
-      else
-        pip install tinybird-cli
-      fi
-
-    # Tinybird version
-    - tb --version
-
-    # Remove Environment
-    - |
-      tb \
-      --host $TB_HOST \
-      --token $TB_ADMIN_TOKEN \
-      env rm tmp_cd_${_NORMALIZED_ENV_NAME}_${CI_COMMIT_SHORT_SHA} \
       --yes
 
 .release_promote:
@@ -365,4 +316,4 @@ variables:
       tb \
       --host $TB_HOST \
       --token $TB_ADMIN_TOKEN \
-      release rm --semver $VERSION
+      release rm --semver $VERSION --force --yes

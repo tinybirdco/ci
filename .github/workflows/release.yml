@@ -13,6 +13,11 @@ on:
         required: false
         type: string
         default: .
+      tb_deploy:
+        description: "use tb deploy based on git releases"
+        required: false
+        type: boolean
+        default: false
     secrets:
       tb_admin_token:
         required: true
@@ -21,7 +26,7 @@ on:
 
 jobs:
   promote:
-    if: inputs.job_to_run == 'promote'
+    if: inputs.job_to_run == 'promote' && inputs.tb_deploy
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -56,7 +61,7 @@ jobs:
           --semver $VERSION
   rollback:
     runs-on: ubuntu-latest
-    if: inputs.job_to_run == 'rollback'
+    if: inputs.job_to_run == 'rollback' && inputs.tb_deploy
     defaults:
       run:
         working-directory: ${{ inputs.data_project_dir }}
@@ -80,7 +85,7 @@ jobs:
       - name: Tinybird version
         run: tb --version
 
-      - name: Promote Release
+      - name: Rollback Release
         run: |
           source .tinyenv
           tb \
@@ -89,7 +94,7 @@ jobs:
           release rollback
   rm:
     runs-on: ubuntu-latest
-    if: inputs.job_to_run == 'rm'
+    if: inputs.job_to_run == 'rm' && inputs.tb_deploy
     defaults:
       run:
         working-directory: ${{ inputs.data_project_dir }}
@@ -113,11 +118,11 @@ jobs:
       - name: Tinybird version
         run: tb --version
 
-      - name: Promote Release
+      - name: Remove Release
         run: |
           source .tinyenv
           tb \
           --host ${{ secrets.tb_host }} \
           --token ${{ secrets.tb_admin_token }} \
-          release rm \
-          --semver $VERSION
+          release rm  \
+          --semver $VERSION --force --yes
