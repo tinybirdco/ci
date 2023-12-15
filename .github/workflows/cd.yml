@@ -73,7 +73,6 @@ jobs:
             CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
             if [ ! -f "$CD_DEPLOY_FILE" ]; then
               if ${{ inputs.tb_deploy }}; then
-                tb release create --semver ${VERSION}
                 tb --semver ${VERSION} deploy 
                 tb release preview --semver ${VERSION}
                 tb release ls
