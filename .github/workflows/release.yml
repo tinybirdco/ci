@@ -35,7 +35,7 @@ jobs:
       - uses: actions/checkout@master
       - uses: actions/setup-python@v3
         with:
-          python-version: "3.8"
+          python-version: "3.11"
           architecture: "x64"
 
       - name: Validate input
@@ -69,7 +69,7 @@ jobs:
       - uses: actions/checkout@master
       - uses: actions/setup-python@v3
         with:
-          python-version: "3.8"
+          python-version: "3.11"
           architecture: "x64"
 
       - name: Validate input
@@ -102,7 +102,7 @@ jobs:
       - uses: actions/checkout@master
       - uses: actions/setup-python@v3
         with:
-          python-version: "3.8"
+          python-version: "3.11"
           architecture: "x64"
 
       - name: Validate input
