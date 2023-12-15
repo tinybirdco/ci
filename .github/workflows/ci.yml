@@ -101,7 +101,7 @@ jobs:
             CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
             if [ ! -f "$CI_DEPLOY_FILE" ]; then
               if ${{ inputs.tb_deploy }}; then
-                tb --semver ${VERSION} deploy
+                tb --semver ${VERSION} deploy --populate --wait
                 tb release promote --semver ${VERSION}
                 tb release ls
               else
