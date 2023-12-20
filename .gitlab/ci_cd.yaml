@@ -83,7 +83,7 @@ variables:
     - |
       CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
       if [ ! -f "$CI_DEPLOY_FILE" ]; then
-        if ${{ inputs.tb_deploy }}; then
+        if [ "$TB_DEPLOY" = "true" ]; then
           tb release create --semver ${VERSION}
           tb --semver ${VERSION} deploy --fixtures --populate --wait
           tb release preview --semver ${VERSION}
