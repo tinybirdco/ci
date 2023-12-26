@@ -47,9 +47,7 @@ jobs:
           _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
           GIT_BRANCH=${GITHUB_HEAD_REF}
           cat .tinyenv >> $GITHUB_ENV
-          if [ "$(tail -c1 $GITHUB_ENV | wc -l)" -eq 0 ]; then
-            echo >> $GITHUB_ENV # Add a new line if the file doesn't end with a new line
-          fi
+          echo >> $GITHUB_ENV # Ensures new line
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
           echo "_ENV_FLAGS=$_ENV_FLAGS" >> $GITHUB_ENV
           echo "_NORMALIZED_ENV_NAME=$_NORMALIZED_ENV_NAME" >> $GITHUB_ENV
