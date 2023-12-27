@@ -85,7 +85,7 @@ variables:
       if [ ! -f "$CI_DEPLOY_FILE" ]; then
         if [ "$TB_DEPLOY" = "true" ]; then
           tb --semver ${VERSION} deploy --fixtures --populate --wait --v3
-          tb release promote --semver ${VERSION}
+          # tb release promote --semver ${VERSION}
           tb release ls
         else
           tb deploy --populate --fixtures --wait
@@ -115,7 +115,7 @@ variables:
       fi
 
     # Run data quality tests
-    - tb test run -v
+    - tb --semver ${VERSION} test run -v
 
     # Run pipe regression tests
     - echo ${CI_MERGE_REQUEST_LABELS}
@@ -123,7 +123,7 @@ variables:
     - echo ${REGRESSION_LABELS}
     - |
       CONFIG_FILE=./tests/regression.yaml
-      BASE_CMD="tb env regression-tests"
+      BASE_CMD="tb --semver ${VERSION} env regression-tests"
       LABELS_CMD="$(echo ${REGRESSION_LABELS} | tr , ' ')"
       if [ -f ${CONFIG_FILE} ]; then
           echo "Config file found: ${CONFIG_FILE}"
