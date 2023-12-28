@@ -84,8 +84,7 @@ variables:
       CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
       if [ ! -f "$CI_DEPLOY_FILE" ]; then
         if [ "$TB_DEPLOY" = "true" ]; then
-          tb --semver ${VERSION} deploy --fixtures --populate --wait --v3
-          tb release promote --semver ${VERSION}
+          tb --semver ${VERSION} deploy --fixtures --populate --wait --v3 ${CI_FLAGS}
           tb release ls
         else
           tb deploy --populate --fixtures --wait
@@ -172,7 +171,7 @@ variables:
       CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
       if [ ! -f "$CD_DEPLOY_FILE" ]; then
         if [ "$TB_DEPLOY" = "true" ]; then
-          tb --semver ${VERSION} deploy --v3
+          tb --semver ${VERSION} deploy --v3 ${CD_FLAGS}
           tb release ls
         else
           tb deploy
