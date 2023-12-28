@@ -1,6 +1,9 @@
 Next Release
 =============
 
+- Remove `tb release promote` from CI jobs, it's included in `tb deploy`.
+- Add `CI_FLAGS` and `CD_FLAGS` env vars to `tb deploy`, they can be per Data Project and PR via `.tinyenv`
+
 v2.5.0
 =======
 
