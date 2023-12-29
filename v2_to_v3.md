@@ -2,7 +2,9 @@
 
 ## Using GitHub
 
-In this case, the changes are easy. You just need to enable `tb_deploy` in all workflows, create a new `release.yml` workflow, and start using (at least) the 2.5.1 version. That means, starting from a simple project:
+You just need to enable `tb_deploy` in all workflows, create a new `release.yml` workflow, and start using (at least) the 2.5.1 version. 
+
+That means, starting from a simple project:
 
 `.github/workflows/tinybird_ci.yml`
 ```diff
@@ -81,3 +83,86 @@ jobs:
 
 ## Using GitLab
 
+The changes for this provider are a bit different. Apart from updating the CI/CD version, we need to remove the `cleanup_cd_env` step, because it is not needed, and include three new steps for promote, rollback and remove releases.
+
+An example in a simple project would be:
+
+```diff
+-include: "https://raw.githubusercontent.com/tinybirdco/ci/v2.4.0/.gitlab/ci_cd.yaml"
++include: "https://raw.githubusercontent.com/tinybirdco/ci/v2.5.1/.gitlab/ci_cd.yaml"
+
+.ci_config_rules:
+    - &ci_config_rule
+    if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - &ci_cleanup_rule
+    if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+.cd_config_rules:
+    - &cd_config_rule
+    if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+.cicd_variables:
+    variables: &cicd_variables
+    TB_HOST: "https://api.tinybird.co"
+    TB_ADMIN_TOKEN: $TB_ADMIN_TOKEN
+    DATA_PROJECT_DIR: "."
++   TB_DEPLOY: "true"
+
+run_ci:
+    extends: .run_ci
+    rules:
+        - *ci_config_rule
+    variables:
+        <<: *cicd_variables
+
+cleanup_ci_env:
+    extends: .cleanup_ci_branch
+    when: always
+    rules:
+        - *ci_cleanup_rule
+    variables:
+        <<: *cicd_variables
+
+run_cd:
+    extends: .run_cd
+    rules:
+        - *cd_config_rule
+    variables:
+        <<: *cicd_variables
+
+-cleanup_cd_env:
+-   extends: .cleanup_cd_branch
+-   needs: ["run_cd"]
+-   when: always
+-   rules:
+-       - *cd_config_rule
+-   variables:
+-       <<: *cicd_variables
+
++run_promote:
++   extends: .release_promote
++   dependencies: []
++   when: manual
++   rules:
++       - *cd_config_rule
++   variables:
++       <<: *cicd_variables
++
++run_rollback:
++   extends: .release_rollback
++   dependencies: []
++   when: manual
++   rules:
++       - *cd_config_rule
++   variables:
++       <<: *cicd_variables
++
++run_rm:
++   extends: .release_rm
++   dependencies: []
++   when: manual
++   rules:
++       - *cd_config_rule
++   variables:
++       <<: *cicd_variables
+```
