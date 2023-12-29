@@ -77,7 +77,7 @@ jobs:
 +         data_project_dir: .
 +         job_to_run: ${{ inputs.job_to_run }}
 +       secrets:
-+         tb_admin_token: ${{ secrets. TB_ADMIN_TOKEN }}
++         tb_admin_token: ${{ secrets.TB_ADMIN_TOKEN }}
 +         tb_host: https://api.tinybird.co
 ```
 
