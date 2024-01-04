@@ -76,9 +76,6 @@ variables:
         env create ${ENVIRONMENT_NAME} \
         ${_ENV_FLAGS}
 
-    # List changes with Main Environment
-    - tb diff --main --no-verbose
-
     # Deploy changes to the test Environment
     - |
       CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
@@ -104,9 +101,6 @@ variables:
           $CI_DEPLOY_FILE
         fi
       fi
-
-    # List changes with test Environment (should be empty)
-    - tb diff
 
     - |
       if [ -f ./scripts/exec_test.sh ]; then

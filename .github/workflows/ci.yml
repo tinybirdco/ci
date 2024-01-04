@@ -93,9 +93,6 @@ jobs:
           env create tmp_ci_${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }} \
           ${_ENV_FLAGS}
 
-      - name: List changes with Main Environment
-        run: tb diff --main --no-verbose
-
       - name: Deploy changes to the test Environment
         run: |
             source .tinyenv
@@ -123,9 +120,6 @@ jobs:
                 $CI_DEPLOY_FILE
               fi
             fi
-
-      - name: List changes with test Environment (should be empty)
-        run: tb diff
 
       - name: Run fixture tests
         run: |
