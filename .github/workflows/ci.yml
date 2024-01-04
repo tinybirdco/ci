@@ -129,7 +129,7 @@ jobs:
 
       - name: Run data quality tests
         run: |
-          tb test run -v
+          tb test run -v -c 4
 
       - name: Get regression labels
         id: regression_labels
