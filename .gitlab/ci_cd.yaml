@@ -282,7 +282,7 @@ variables:
       tb \
       --host $TB_HOST \
       --token $TB_ADMIN_TOKEN \
-      release rollback
+      release rollback --yes
 
 .release_rm:
   stage: release
