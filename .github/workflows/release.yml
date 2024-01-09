@@ -91,7 +91,7 @@ jobs:
           tb \
           --host ${{ secrets.tb_host }} \
           --token ${{ secrets.tb_admin_token }} \
-          release rollback
+          release rollback --yes
   rm:
     runs-on: ubuntu-latest
     if: inputs.job_to_run == 'rm' && inputs.tb_deploy
