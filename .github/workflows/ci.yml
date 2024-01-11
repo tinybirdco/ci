@@ -93,9 +93,6 @@ jobs:
           env create tmp_ci_${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }} \
           ${_ENV_FLAGS}
 
-      - name: List changes with Main Environment
-        run: tb diff --main --no-verbose
-
       - name: Deploy changes to the test Environment
         run: |
             source .tinyenv
@@ -124,9 +121,6 @@ jobs:
               fi
             fi
 
-      - name: List changes with test Environment (should be empty)
-        run: tb diff
-
       - name: Run fixture tests
         run: |
           if [ -f ./scripts/exec_test.sh ]; then
@@ -135,7 +129,7 @@ jobs:
 
       - name: Run data quality tests
         run: |
-          tb test run -v
+          tb test run -v -c 4
 
       - name: Get regression labels
         id: regression_labels
