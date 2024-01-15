@@ -44,11 +44,11 @@ jobs:
       - name: Set environment variables
         run: |
           _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
-          _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
+          _NORMALIZED_BRANCH_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
           GIT_BRANCH=${GITHUB_HEAD_REF}
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
           echo "_ENV_FLAGS=$_ENV_FLAGS" >> $GITHUB_ENV
-          echo "_NORMALIZED_ENV_NAME=$_NORMALIZED_ENV_NAME" >> $GITHUB_ENV
+          echo "_NORMALIZED_BRANCH_NAME=$_NORMALIZED_BRANCH_NAME" >> $GITHUB_ENV
           cat .tinyenv >> $GITHUB_ENV
           echo >> $GITHUB_ENV # Ensures new line at the end of the file
 
@@ -69,31 +69,31 @@ jobs:
       - name: Check auth
         run: tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} auth info
 
-      - name: Try delete previous Environment
+      - name: Try delete previous Branch
         run: |
           output=$(tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} env ls)
-          ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }}"
+          BRANCH_NAME="tmp_ci_${_NORMALIZED_BRANCH_NAME}_${{ github.event.pull_request.number }}"
 
-          # Check if the environment name exists in the output
-          if echo "$output" | grep -q "\b$ENVIRONMENT_NAME\b"; then
+          # Check if the branch name exists in the output
+          if echo "$output" | grep -q "\b$BRANCH_NAME\b"; then
               tb \
                 --host ${{ secrets.tb_host }} \
                 --token ${{ secrets.tb_admin_token }} \
-                env rm $ENVIRONMENT_NAME \
+                env rm $BRANCH_NAME \
                 --yes
           else
-              echo "Skipping clean up: The Environment '$ENVIRONMENT_NAME' does not exist."
+              echo "Skipping clean up: The Branch '$BRANCH_NAME' does not exist."
           fi
 
-      - name: Create new test Environment with data
+      - name: Create new test Branch with data
         run: |
           tb \
           --host ${{ secrets.tb_host }} \
           --token ${{ secrets.tb_admin_token }} \
-          env create tmp_ci_${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }} \
+          env create tmp_ci_${_NORMALIZED_BRANCH_NAME}_${{ github.event.pull_request.number }} \
           ${_ENV_FLAGS}
 
-      - name: Deploy changes to the test Environment
+      - name: Deploy changes to the test Branch
         run: |
             source .tinyenv
             CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
@@ -106,7 +106,7 @@ jobs:
               fi
             fi
 
-      - name: Custom deployment to the test Environment
+      - name: Custom deployment to the test Branch
         run: |
             source .tinyenv
             CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
@@ -183,18 +183,18 @@ jobs:
       - name: Tinybird version
         run: tb --version       
 
-      - name: Try delete previous Environment
+      - name: Try delete previous Branch
         run: |
           output=$(tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} env ls)
-          ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }}"
+          BRANCH_NAME="tmp_ci_${_NORMALIZED_BRANCH_NAME}_${{ github.event.pull_request.number }}"
 
-          # Check if the environment name exists in the output
-          if echo "$output" | grep -q "\b$ENVIRONMENT_NAME\b"; then
+          # Check if the branch name exists in the output
+          if echo "$output" | grep -q "\b$BRANCH_NAME\b"; then
               tb \
                 --host ${{ secrets.tb_host }} \
                 --token ${{ secrets.tb_admin_token }} \
-                env rm $ENVIRONMENT_NAME \
+                env rm $BRANCH_NAME \
                 --yes
           else
-              echo "Skipping clean up: The Environment '$ENVIRONMENT_NAME' does not exist."
+              echo "Skipping clean up: The Branch '$BRANCH_NAME' does not exist."
           fi

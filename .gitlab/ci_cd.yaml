@@ -27,7 +27,7 @@ variables:
     - *validate_input
     - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
-    - _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
+    - _NORMALIZED_BRANCH_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
     - source .tinyenv
 
     # Create Python Virtual Environment
@@ -51,32 +51,32 @@ variables:
     # Check auth
     - tb --host $TB_HOST --token $TB_ADMIN_TOKEN auth info
 
-    # Try delete previous Environment
+    # Try delete previous Branch
     - |
       output=$(tb --host $TB_HOST --token $TB_ADMIN_TOKEN env ls)
       AUTHOR=$(echo "$CI_COMMIT_AUTHOR" | sed -E 's/[^a-zA-Z0-9]//g')
-      ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${AUTHOR}"
+      BRANCH_NAME="tmp_ci_${_NORMALIZED_BRANCH_NAME}_${AUTHOR}"
 
-      # Check if the environment name exists in the output
-      if echo "$output" | grep -q "\b$ENVIRONMENT_NAME\b"; then
+      # Check if the branch name exists in the output
+      if echo "$output" | grep -q "\b$BRANCH_NAME\b"; then
           tb \
             --host $TB_HOST \
             --token $TB_ADMIN_TOKEN \
-            env rm $ENVIRONMENT_NAME \
+            env rm $BRANCH_NAME \
             --yes
       else
-          echo "Skipping clean up: The Environment '$ENVIRONMENT_NAME' does not exist."
+          echo "Skipping clean up: The Branch '$BRANCH_NAME' does not exist."
       fi
 
-    # Create new test Environment with data
+    # Create new test Branch with data
     - |
       tb \
         --host $TB_HOST \
         --token $TB_ADMIN_TOKEN \
-        env create ${ENVIRONMENT_NAME} \
+        env create ${BRANCH_NAME} \
         ${_ENV_FLAGS}
 
-    # Deploy changes to the test Environment
+    # Deploy changes to the test Branch
     - |
       CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
       if [ ! -f "$CI_DEPLOY_FILE" ]; then
@@ -88,7 +88,7 @@ variables:
         fi
       fi
 
-    # Custom deployment to the test Environment
+    # Custom deployment to the test Branch
     - |
       CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
       if [ -f "$CI_DEPLOY_FILE" ]; then
@@ -136,7 +136,7 @@ variables:
     - *validate_input
     - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
-    - _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
+    - _NORMALIZED_BRANCH_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
     - source .tinyenv
 
     # Create Python Virtual Environment
@@ -192,9 +192,9 @@ variables:
   script:
     - *validate_input
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
-    - _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
+    - _NORMALIZED_BRANCH_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
     - AUTHOR=$(echo "$CI_COMMIT_AUTHOR" | sed -E 's/[^a-zA-Z0-9]//g')
-    - ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${AUTHOR}"
+    - BRANCH_NAME="tmp_ci_${_NORMALIZED_BRANCH_NAME}_${AUTHOR}"
 
     # Create Python Virtual Environment
     - python -m venv .venv
@@ -211,12 +211,12 @@ variables:
     # Tinybird version
     - tb --version
 
-    # Remove test Environment
+    # Remove test Branch
     - |
       tb \
       --host $TB_HOST \
       --token $TB_ADMIN_TOKEN \
-      env rm ${ENVIRONMENT_NAME} \
+      env rm ${BRANCH_NAME} \
       --yes
 
 .release_promote:
