@@ -21,8 +21,8 @@ on:
         required: true
 
 jobs:
-  environment:
-    name: Create CI Environment
+  deploy:
+    name: Deploy to CI Environment
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -93,56 +93,6 @@ jobs:
           --token ${{ secrets.tb_admin_token }} \
           env create tmp_ci_${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }} \
           ${_ENV_FLAGS}
-
-  deploy:
-    name: Deploy to CI Environment
-    runs-on: ubuntu-latest
-    needs:
-      - environment
-    defaults:
-      run:
-        working-directory: ${{ inputs.data_project_dir }}
-    if: ${{ github.event.action != 'closed' }}
-    steps:
-      - uses: actions/checkout@master
-        with:
-          fetch-depth: 300
-          ref: ${{ github.event.pull_request.head.sha }}
-      - uses: actions/setup-python@v3
-        with:
-          python-version: "3.11"
-          architecture: "x64"
-
-      - name: Validate input
-        run: |
-          [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Go to the tokens section in your Workspace, copy the 'admin token (user@domain.com)' associated to a user account and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1; }
-      - name: Set environment variables
-        run: |
-          _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
-          _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
-          GIT_BRANCH=${GITHUB_HEAD_REF}
-          echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
-          echo "_ENV_FLAGS=$_ENV_FLAGS" >> $GITHUB_ENV
-          echo "_NORMALIZED_ENV_NAME=$_NORMALIZED_ENV_NAME" >> $GITHUB_ENV
-          cat .tinyenv >> $GITHUB_ENV
-          echo >> $GITHUB_ENV # Ensures new line at the end of the file
-      - name: Install Tinybird CLI
-        run: |
-          if [ -f "requirements.txt" ]; then
-            pip install -r requirements.txt
-          else
-            pip install tinybird-cli
-          fi
-      - name: Tinybird version
-        run: tb --version
-
-      - name: Check auth
-        run: tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} auth info
-
-      - name: Use Environment
-        run: |
-          ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }}"
-          tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} env use $ENVIRONMENT_NAME
 
       - name: Deploy changes to the test Environment
         run: |
