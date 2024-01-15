@@ -141,7 +141,7 @@ variables:
 
     # Custom test data operations
     - |
-    DATAOPS_FILE=./deploy/${VERSION}/dataops.sh
+      DATAOPS_FILE=./deploy/${VERSION}/dataops.sh
       if [ -f "$DATAOPS_FILE" ]; then
         if ! [ -x "$DATAOPS_FILE" ]; then
           echo "Error: You do not have permission to execute '$DATAOPS_FILE'. Run:"
