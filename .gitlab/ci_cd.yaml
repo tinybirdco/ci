@@ -157,7 +157,7 @@ variables:
       else
         if [ -f ./scripts/append_fixtures.sh ]; then
           echo "append_fixtures script found"
-          ./scripts/append_fixtures.sh
+          ./scripts/append_fixtures.sh $VERSION
         fi
       fi
 
