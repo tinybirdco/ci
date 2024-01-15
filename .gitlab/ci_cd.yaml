@@ -80,6 +80,7 @@ variables:
     - |
       DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
       if [ ! -f "$DEPLOY_FILE" ]; then
+        echo "$DEPLOY_FILE not found, running default tb deploy command"
         if [ "$TB_DEPLOY" = "true" ]; then
           tb --semver ${VERSION} deploy --v3 ${CI_FLAGS}
           tb release ls
@@ -92,6 +93,7 @@ variables:
     - |
       DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
       if [ -f "$DEPLOY_FILE" ]; then
+        echo "$DEPLOY_FILE found"
         if ! [ -x "$DEPLOY_FILE" ]; then
           echo "Error: You do not have permission to execute '$DEPLOY_FILE'. Run:"
           echo "> chmod +x $DEPLOY_FILE"
@@ -143,6 +145,7 @@ variables:
     - |
       POSTDEPLOY_FILE=./deploy/${VERSION}/postdeploy.sh
       if [ -f "$POSTDEPLOY_FILE" ]; then
+        echo "$POSTDEPLOY_FILE found"
         if ! [ -x "$POSTDEPLOY_FILE" ]; then
           echo "Error: You do not have permission to execute '$POSTDEPLOY_FILE'. Run:"
           echo "> chmod +x $POSTDEPLOY_FILE"
@@ -150,6 +153,11 @@ variables:
           exit 1
         else
           $POSTDEPLOY_FILE
+        fi
+      else
+        if [ -f ./scripts/append-fixtures.sh ]; then
+          echo "append-fixtures script found"
+          ./scripts/append-fixtures.sh
         fi
       fi
 
@@ -215,6 +223,7 @@ variables:
     - |
       DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
       if [ ! -f "$DEPLOY_FILE" ]; then
+        echo "$DEPLOY_FILE not found, running default tb deploy command"
         if [ "$TB_DEPLOY" = "true" ]; then
           tb --semver ${VERSION} deploy --v3 ${CD_FLAGS}
           tb release ls
@@ -227,6 +236,7 @@ variables:
     - |
       DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
       if [ -f "$DEPLOY_FILE" ]; then
+        echo "$DEPLOY_FILE found"
         if ! [ -x "$DEPLOY_FILE" ]; then
           echo "Error: You do not have permission to execute '$DEPLOY_FILE'. Run:"
           echo "> chmod +x $DEPLOY_FILE"
