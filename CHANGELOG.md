@@ -1,6 +1,7 @@
 Next Release
 =============
 
+- Avoid to run deploy command with the `--fixtures` flag when there's no fixtures.
 - Remove `tb release promote` from CI jobs, it's included in `tb deploy`.
 - Add `CI_FLAGS` and `CD_FLAGS` env vars to `tb deploy`, they can be defined per Data Project and PR via `.tinyenv`
 - Update rollback job to include the `--yes` flag to `tb release rollback`

@@ -96,13 +96,20 @@ jobs:
       - name: Deploy changes to the test Environment
         run: |
             source .tinyenv
+
             CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
+            FIXTURES_FLAG=""
+
+            if [ -d "./datasources/fixtures" ] && [ "$(ls -A ./datasources/fixtures)" ]; then
+              FIXTURES_FLAG="--fixtures"
+            fi
+            
             if [ ! -f "$CI_DEPLOY_FILE" ]; then
               if ${{ inputs.tb_deploy }}; then
-                tb --semver ${VERSION} deploy --fixtures --populate --wait --v3 ${CI_FLAGS}
+                tb --semver ${VERSION} deploy ${FIXTURES_FLAG} --populate --wait --v3 ${CI_FLAGS}
                 tb release ls
               else
-                tb deploy --populate --fixtures --wait
+                tb deploy --populate ${FIXTURES_FLAG} --wait
               fi
             fi
 
