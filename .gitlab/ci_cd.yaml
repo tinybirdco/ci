@@ -167,7 +167,7 @@ variables:
       fi
 
     # Run data quality tests
-    - tb test run -v -c 4
+    - tb --semver $VERSION test run -v -c 4
 
     # Run pipe regression tests
     - echo ${CI_MERGE_REQUEST_LABELS}
