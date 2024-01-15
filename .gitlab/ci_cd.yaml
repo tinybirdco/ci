@@ -163,7 +163,7 @@ variables:
 
     - |
       if [ -f ./scripts/exec_test.sh ]; then
-        ./scripts/exec_test.sh
+        ./scripts/exec_test.sh $VERSION
       fi
 
     # Run data quality tests
