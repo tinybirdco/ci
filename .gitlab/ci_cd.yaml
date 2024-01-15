@@ -17,7 +17,7 @@ variables:
       echo "Go to the tokens section in your Workspace, copy the 'admin token' and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1;
     fi
 
-.deploy_ci:
+.tb_deploy_ci:
   stage: ci
   image: ${IMAGE_BASE}
   interruptible: true
@@ -126,7 +126,7 @@ variables:
           ${BASE_CMD} coverage --wait ${LABELS_CMD}
       fi
 
-.test:
+.tb_test:
   stage: ci
   image: ${IMAGE_BASE}
   interruptible: true
@@ -187,7 +187,7 @@ variables:
           ${BASE_CMD} coverage --wait ${LABELS_CMD}
       fi
 
-.deploy_main:
+.tb_deploy_main:
   stage: cd
   image: ${IMAGE_BASE}
   interruptible: true
@@ -247,7 +247,7 @@ variables:
         fi
       fi
 
-.cleanup_ci_branch:
+.tb_cleanup_ci_branch:
   stage: cleanup
   image: ${IMAGE_BASE}
   script:
