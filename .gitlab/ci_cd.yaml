@@ -155,9 +155,9 @@ variables:
           $POSTDEPLOY_FILE
         fi
       else
-        if [ -f ./scripts/append-fixtures.sh ]; then
-          echo "append-fixtures script found"
-          ./scripts/append-fixtures.sh
+        if [ -f ./scripts/append_fixtures.sh ]; then
+          echo "append_fixtures script found"
+          ./scripts/append_fixtures.sh
         fi
       fi
 
