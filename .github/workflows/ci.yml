@@ -99,6 +99,7 @@ jobs:
             source .tinyenv
             DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
             if [ ! -f "$DEPLOY_FILE" ]; then
+              echo "$DEPLOY_FILE not found, running default tb deploy command"
               if ${{ inputs.tb_deploy }}; then
                 tb --semver ${VERSION} deploy --v3 ${CI_FLAGS}
                 tb release ls
@@ -112,6 +113,7 @@ jobs:
             source .tinyenv
             DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
             if [ -f "$DEPLOY_FILE" ]; then
+              echo "$DEPLOY_FILE found"
               if ! [ -x "$DEPLOY_FILE" ]; then
                 echo "Error: You do not have permission to execute '$DEPLOY_FILE'. Run:"
                 echo "> chmod +x $DEPLOY_FILE"
@@ -184,17 +186,22 @@ jobs:
             else
               $POSTDEPLOY_FILE
             fi
+          else
+            if [ -f ./scripts/append_fixtures.sh ]; then
+              echo "append_fixtures script found"
+              ./scripts/append_fixtures.sh $VERSION
+            fi
           fi
 
       - name: Run fixture tests
         run: |
           if [ -f ./scripts/exec_test.sh ]; then
-            ./scripts/exec_test.sh
+            ./scripts/exec_test.sh $VERSION
           fi
 
       - name: Run data quality tests
         run: |
-          tb test run -v -c 4
+          tb --semver $VERSION test run -v -c 4
 
       - name: Get regression labels
         id: regression_labels

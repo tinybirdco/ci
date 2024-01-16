@@ -70,6 +70,7 @@ jobs:
         run: |
             DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
             if [ ! -f "$DEPLOY_FILE" ]; then
+              echo "$DEPLOY_FILE not found, running default tb deploy command"
               if ${{ inputs.tb_deploy }}; then
                 tb --semver ${VERSION} deploy --v3 ${CD_FLAGS}
                 tb release ls
@@ -82,6 +83,7 @@ jobs:
         run: |
             DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
             if [ -f "$DEPLOY_FILE" ]; then
+              echo "$DEPLOY_FILE found"
               if ! [ -x "$DEPLOY_FILE" ]; then
                 echo "Error: You do not have permission to execute '$DEPLOY_FILE'. Run:"
                 echo "> chmod +x $DEPLOY_FILE"
