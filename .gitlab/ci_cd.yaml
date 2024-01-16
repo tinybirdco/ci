@@ -162,9 +162,7 @@ variables:
       fi
 
     - |
-      echo $VERSION
       if [ -f ./scripts/exec_test.sh ]; then
-        echo $VERSION
         ./scripts/exec_test.sh $VERSION
       fi
 
