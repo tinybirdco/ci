@@ -176,7 +176,7 @@ jobs:
 
       - name: Get env token
         run: |
-          ENV_TOKEN="$(cat .tinyb | jq -r '.token')"
+          ENV_TOKEN=$(python -c "import json; print(json.load(open('.tinyb'))['token'])")
           echo "::add-mask::$ENV_TOKEN"
           echo "TB_ADMIN_TOKEN=$ENV_TOKEN" >> $GITHUB_ENV
 
