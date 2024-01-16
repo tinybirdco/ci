@@ -141,6 +141,13 @@ variables:
       ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${AUTHOR}"
       tb --host $TB_HOST --token $TB_ADMIN_TOKEN env use $ENVIRONMENT_NAME
 
+    # Append fixtures
+    - |
+    if [ -f ./scripts/append_fixtures.sh ]; then
+      echo "append_fixtures script found"
+      ./scripts/append_fixtures.sh $VERSION
+    fi
+
     # Custom test data operations
     - |
       POSTDEPLOY_FILE=./deploy/${VERSION}/postdeploy.sh
@@ -153,11 +160,6 @@ variables:
           exit 1
         else
           $POSTDEPLOY_FILE
-        fi
-      else
-        if [ -f ./scripts/append_fixtures.sh ]; then
-          echo "append_fixtures script found"
-          ./scripts/append_fixtures.sh $VERSION
         fi
       fi
 
