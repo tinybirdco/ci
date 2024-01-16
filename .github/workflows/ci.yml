@@ -174,6 +174,12 @@ jobs:
           ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${{ github.event.pull_request.number }}"
           tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} env use $ENVIRONMENT_NAME
 
+      - name: Get env token
+        run: |
+          ENV_TOKEN="$(cat .tinyb | jq -r '.token')"
+          echo "::add-mask::$ENV_TOKEN"
+          echo "TB_ADMIN_TOKEN=$ENV_TOKEN" >> $GITHUB_ENV
+
       - name: Append fixtures
         run: |
           if [ -f ./scripts/append_fixtures.sh ]; then

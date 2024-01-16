@@ -141,6 +141,10 @@ variables:
       ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${AUTHOR}"
       tb --host $TB_HOST --token $TB_ADMIN_TOKEN env use $ENVIRONMENT_NAME
 
+    # Get env token
+    - |
+      TB_ADMIN_TOKEN="$(cat .tinyb | jq -r '.token')"
+
     # Append fixtures
     - |
       if [ -f ./scripts/append_fixtures.sh ]; then
