@@ -143,10 +143,10 @@ variables:
 
     # Append fixtures
     - |
-    if [ -f ./scripts/append_fixtures.sh ]; then
-      echo "append_fixtures script found"
-      ./scripts/append_fixtures.sh $VERSION
-    fi
+      if [ -f ./scripts/append_fixtures.sh ]; then
+        echo "append_fixtures script found"
+        ./scripts/append_fixtures.sh $VERSION
+      fi
 
     # Custom test data operations
     - |
