@@ -180,13 +180,6 @@ jobs:
           echo "::add-mask::$ENV_TOKEN"
           echo "TB_ENV_TOKEN=$ENV_TOKEN" >> $GITHUB_ENV
 
-      - name: Append fixtures
-        run: |
-          if [ -f ./scripts/append_fixtures.sh ]; then
-            echo "append_fixtures script found"
-            ./scripts/append_fixtures.sh $VERSION
-          fi
-
       - name: Post deploy
         run: |
           POSTDEPLOY_FILE=./deploy/${VERSION}/postdeploy.sh
@@ -199,6 +192,13 @@ jobs:
             else
               $POSTDEPLOY_FILE
             fi
+          fi
+
+      - name: Append fixtures
+        run: |
+          if [ -f ./scripts/append_fixtures.sh ]; then
+            echo "append_fixtures script found"
+            ./scripts/append_fixtures.sh $VERSION
           fi
 
       - name: Run fixture tests

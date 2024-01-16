@@ -145,13 +145,6 @@ variables:
     - |
       TB_ENV_TOKEN=$(python -c "import json; print(json.load(open('.tinyb'))['token'])")
 
-    # Append fixtures
-    - |
-      if [ -f ./scripts/append_fixtures.sh ]; then
-        echo "append_fixtures script found"
-        ./scripts/append_fixtures.sh $VERSION
-      fi
-
     # Custom test data operations
     - |
       POSTDEPLOY_FILE=./deploy/${VERSION}/postdeploy.sh
@@ -165,6 +158,13 @@ variables:
         else
           $POSTDEPLOY_FILE
         fi
+      fi
+
+    # Append fixtures
+    - |
+      if [ -f ./scripts/append_fixtures.sh ]; then
+        echo "append_fixtures script found"
+        ./scripts/append_fixtures.sh $VERSION
       fi
 
     - |
