@@ -143,7 +143,7 @@ variables:
 
     # Get env token
     - |
-      TB_ENV_TOKEN=$(python -c "import json; print(json.load(open('.tinyb'))['token'])")
+      export TB_ENV_TOKEN=$(python -c "import json; print(json.load(open('.tinyb'))['token'])")
 
     # Custom test data operations
     - |
