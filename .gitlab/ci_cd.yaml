@@ -143,7 +143,7 @@ variables:
 
     # Get env token
     - |
-      TB_ADMIN_TOKEN=$(python -c "import json; print(json.load(open('.tinyb'))['token'])")
+      TB_ENV_TOKEN=$(python -c "import json; print(json.load(open('.tinyb'))['token'])")
 
     # Append fixtures
     - |
