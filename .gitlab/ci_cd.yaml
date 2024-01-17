@@ -253,6 +253,21 @@ variables:
         fi
       fi
 
+    # Custom data operations
+    - |
+      POSTDEPLOY_FILE=./deploy/${VERSION}/postdeploy.sh
+      if [ -f "$POSTDEPLOY_FILE" ]; then
+        echo "$POSTDEPLOY_FILE found"
+        if ! [ -x "$POSTDEPLOY_FILE" ]; then
+          echo "Error: You do not have permission to execute '$POSTDEPLOY_FILE'. Run:"
+          echo "> chmod +x $POSTDEPLOY_FILE"
+          echo "and commit your changes"
+          exit 1
+        else
+          $POSTDEPLOY_FILE
+        fi
+      fi
+
 .tb_cleanup_ci_branch:
   stage: cleanup
   image: ${IMAGE_BASE}
