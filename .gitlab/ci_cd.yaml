@@ -160,21 +160,6 @@ variables:
         fi
       fi
 
-    # Append fixtures
-    - |
-      if [ -f ./scripts/append_fixtures.sh ]; then
-        echo "append_fixtures script found"
-        ./scripts/append_fixtures.sh $VERSION
-      fi
-
-    - |
-      if [ -f ./scripts/exec_test.sh ]; then
-        ./scripts/exec_test.sh $VERSION
-      fi
-
-    # Run data quality tests
-    - tb --semver $VERSION test run -v -c 4
-
     # Run pipe regression tests
     - echo ${CI_MERGE_REQUEST_LABELS}
     - REGRESSION_LABELS=$(echo "${CI_MERGE_REQUEST_LABELS}" | awk -F, '{for (i=1; i<=NF; i++) if ($i ~ /^--/) print $i}' ORS=',' | sed 's/,$//')
@@ -190,6 +175,21 @@ variables:
           echo "Config file not found at '${CONFIG_FILE}', running with default values"
           ${BASE_CMD} coverage --wait ${LABELS_CMD}
       fi
+
+    # Append fixtures
+    - |
+      if [ -f ./scripts/append_fixtures.sh ]; then
+        echo "append_fixtures script found"
+        ./scripts/append_fixtures.sh $VERSION
+      fi
+
+    - |
+      if [ -f ./scripts/exec_test.sh ]; then
+        ./scripts/exec_test.sh $VERSION
+      fi
+
+    # Run data quality tests
+    - tb --semver $VERSION test run -v -c 4
 
 .tb_deploy_main:
   stage: cd
