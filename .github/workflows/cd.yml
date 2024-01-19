@@ -20,12 +20,12 @@ on:
         required: true
 
 jobs:
-  push_changes:
+  deploy:
+    name: Deploy to main
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ${{ inputs.data_project_dir }}
-    name: Push changes to Workspace
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -63,16 +63,14 @@ jobs:
       - name: Tinybird version
         run: tb --version
 
-      - name: Check all the data files syntax
-        run: tb check
-
       - name: Check auth
         run: tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} auth info
 
       - name: Deploy changes to the main Workspace
         run: |
-            CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
-            if [ ! -f "$CD_DEPLOY_FILE" ]; then
+            DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
+            if [ ! -f "$DEPLOY_FILE" ]; then
+              echo "$DEPLOY_FILE not found, running default tb deploy command"
               if ${{ inputs.tb_deploy }}; then
                 tb --semver ${VERSION} deploy --v3 ${CD_FLAGS}
                 tb release ls
@@ -83,14 +81,29 @@ jobs:
 
       - name: Custom deployment to the main Workspace
         run: |
-            CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
-            if [ -f "$CD_DEPLOY_FILE" ]; then
-              if ! [ -x "$CD_DEPLOY_FILE" ]; then
-                echo "Error: You do not have permission to execute '$CD_DEPLOY_FILE'. Run:"
-                echo "> chmod +x $CD_DEPLOY_FILE"
+            DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
+            if [ -f "$DEPLOY_FILE" ]; then
+              echo "$DEPLOY_FILE found"
+              if ! [ -x "$DEPLOY_FILE" ]; then
+                echo "Error: You do not have permission to execute '$DEPLOY_FILE'. Run:"
+                echo "> chmod +x $DEPLOY_FILE"
                 echo "and commit your changes"
                 exit 1
               else
-                $CD_DEPLOY_FILE
+                $DEPLOY_FILE
               fi
             fi
+
+      - name: Post deploy
+        run: |
+          POSTDEPLOY_FILE=./deploy/${VERSION}/postdeploy.sh
+          if [ -f "$POSTDEPLOY_FILE" ]; then
+            if ! [ -x "$POSTDEPLOY_FILE" ]; then
+              echo "Error: You do not have permission to execute '$POSTDEPLOY_FILE'. Run:"
+              echo "> chmod +x $POSTDEPLOY_FILE"
+              echo "and commit your changes"
+              exit 1
+            else
+              $POSTDEPLOY_FILE
+            fi
+          fi

@@ -1,9 +1,16 @@
-Next Release
-=============
+Next Release (v3.0.0)
+=====================
 
-- Remove `tb release promote` from CI jobs, it's included in `tb deploy`.
 - Add `CI_FLAGS` and `CD_FLAGS` env vars to `tb deploy`, they can be defined per Data Project and PR via `.tinyenv`
 - Update rollback job to include the `--yes` flag to `tb release rollback`
+- Split CI jobs into:
+  - Deployment + test
+- Make deployment idempotent in CI and CD.
+- Remove `ci-deploy.sh` and `cd-deploy.sh` in favour of `deploy.sh`
+- Add `postdeploy.sh` as a custom script to be run before the test job. It can be used to run data operations (such as populates), promote release, etc.
+
+TODO => How to migrate:
+
 
 v2.5.0
 =======
