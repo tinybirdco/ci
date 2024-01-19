@@ -267,7 +267,8 @@ variables:
     - *validate_input
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
     - _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
-    SEMVER=$(echo "$VERSION" | sed 's/[.-]/_/g')
+    - source .tinyenv
+    - SEMVER=$(echo "$VERSION" | sed 's/[.-]/_/g')
     - ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${SEMVER}"
 
     # Create Python Virtual Environment
