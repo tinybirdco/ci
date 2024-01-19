@@ -81,12 +81,8 @@ variables:
       DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
       if [ ! -f "$DEPLOY_FILE" ]; then
         echo "$DEPLOY_FILE not found, running default tb deploy command"
-        if [ "$TB_DEPLOY" = "true" ]; then
-          tb --semver ${VERSION} deploy --v3 ${CI_FLAGS}
-          tb release ls
-        else
-          tb deploy --populate --fixtures --wait
-        fi
+        tb --semver ${VERSION} deploy ${CI_FLAGS}
+        tb release ls
       fi
 
     # Custom deployment to the test Environment
@@ -230,12 +226,8 @@ variables:
       DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
       if [ ! -f "$DEPLOY_FILE" ]; then
         echo "$DEPLOY_FILE not found, running default tb deploy command"
-        if [ "$TB_DEPLOY" = "true" ]; then
-          tb --semver ${VERSION} deploy --v3 ${CD_FLAGS}
-          tb release ls
-        else
-          tb deploy
-        fi
+        tb --semver ${VERSION} deploy ${CD_FLAGS}
+        tb release ls
       fi
 
     # OPTIONALLY Custom deployment to main Workspace. Useful for post CD deploy commands (e.g.: tb pipe populate)
