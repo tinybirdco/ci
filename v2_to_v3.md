@@ -2,7 +2,7 @@
 
 ## Using GitHub
 
-You just need to enable `tb_deploy` in all workflows, create a new `release.yml` workflow, and start using (at least) the 2.5.1 version. 
+You just need to enable `tb_deploy` in all workflows, create a new `release.yml` workflow, and start using (at least) the v3.0.0 version. 
 
 That means, starting from a simple project:
 
@@ -23,8 +23,8 @@ concurrency: ${{ github.workflow }}-${{ github.event.pull_request.number }}
 
 jobs:
     ci:
--       uses: tinybirdco/ci/.github/workflows/ci.yml@main
-+       uses: tinybirdco/ci/.github/workflows/ci.yml@2.5.1
+-       uses: tinybirdco/ci/.github/workflows/ci.yml@v2.4.0
++       uses: tinybirdco/ci/.github/workflows/ci.yml@v3.0.0
         with:
             data_project_dir: .
 +           tb_deploy: true          
@@ -47,8 +47,8 @@ on:
 
 jobs:
     cd:
--       uses: tinybirdco/ci/.github/workflows/ci.yml@main
-+       uses: tinybirdco/ci/.github/workflows/ci.yml@2.5.1
+-       uses: tinybirdco/ci/.github/workflows/ci.yml@v2.4.0
++       uses: tinybirdco/ci/.github/workflows/ci.yml@v3.0.0
         with:
             data_project_dir: .
 +           tb_deploy: true          
@@ -71,7 +71,7 @@ jobs:
 + 
 + jobs:
 +     release: 
-+       uses: tinybirdco/ci/.github/workflows/release.+ yml@2.5.1
++       uses: tinybirdco/ci/.github/workflows/release.+ yml@v3.0.0
 +       with:
 +         tb_deploy: true
 +         data_project_dir: .
@@ -89,11 +89,16 @@ An example in a simple project would be:
 
 ```diff
 -include: "https://raw.githubusercontent.com/tinybirdco/ci/v2.4.0/.gitlab/ci_cd.yaml"
-+include: "https://raw.githubusercontent.com/tinybirdco/ci/v2.5.1/.gitlab/ci_cd.yaml"
++include: "https://raw.githubusercontent.com/tinybirdco/ci/v3.0.1/.gitlab/ci_cd.yaml"
 
 .ci_config_rules:
-    - &ci_config_rule
+-   - &ci_config_rule
++   - &ci_config_rule_tests
     if: $CI_PIPELINE_SOURCE == "merge_request_event"
++   allow_failure: true
++   - &ci_config_rule_test_deploy  
++   if: $CI_PIPELINE_SOURCE == "merge_request_event" 
++   allow_failure: false  
     - &ci_cleanup_rule
     if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
@@ -108,15 +113,26 @@ An example in a simple project would be:
     DATA_PROJECT_DIR: "."
 +   TB_DEPLOY: "true"
 
-run_ci:
-    extends: .run_ci
+-run_ci:
++deploy_ci:
+-   extends: .run_ci
++   extends: .tb_deploy_ci
     rules:
-        - *ci_config_rule
+-        - *ci_config_rule
++        - *ci_config_rule_deploy   
     variables:
         <<: *cicd_variables
 
++tests_ci:
++   extends: .tb_test
++   rules:
++       - *ci_config_rule_tests
++   variables:
++      <<: *cicd_variables
+
 cleanup_ci_env:
-    extends: .cleanup_ci_branch
+-    extends: .cleanup_ci_branch
++    extends: .tb_cleanup_ci_branch
     when: always
     rules:
         - *ci_cleanup_rule
