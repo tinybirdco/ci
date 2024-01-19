@@ -147,7 +147,7 @@ jobs:
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
           echo "_ENV_FLAGS=$_ENV_FLAGS" >> $GITHUB_ENV
           echo "_NORMALIZED_ENV_NAME=$_NORMALIZED_ENV_NAME" >> $GITHUB_ENV
-          cat .tinyenv >> $GITHUB_ENV
+          grep -v '^#' .tinyenv >> $GITHUB_ENV
           echo >> $GITHUB_ENV # Ensures new line at the end of the file
       - name: Install Tinybird CLI
         run: |
