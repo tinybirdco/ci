@@ -54,8 +54,8 @@ variables:
     # Try delete previous Environment
     - |
       output=$(tb --host $TB_HOST --token $TB_ADMIN_TOKEN env ls)
-      AUTHOR=$(echo "$CI_COMMIT_AUTHOR" | sed -E 's/[^a-zA-Z0-9]//g')
-      ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${AUTHOR}"
+      SEMVER=$(echo "$VERSION" | sed 's/[.-]/_/g')
+      ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${SEMVER}"
 
       # Check if the environment name exists in the output
       if echo "$output" | grep -q "\b$ENVIRONMENT_NAME\b"; then
@@ -133,8 +133,8 @@ variables:
 
     # Use CI environment
     - |
-      AUTHOR=$(echo "$CI_COMMIT_AUTHOR" | sed -E 's/[^a-zA-Z0-9]//g')
-      ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${AUTHOR}"
+      SEMVER=$(echo "$VERSION" | sed 's/[.-]/_/g')
+      ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${SEMVER}"
       tb --host $TB_HOST --token $TB_ADMIN_TOKEN env use $ENVIRONMENT_NAME
 
     # Get env token
@@ -267,8 +267,9 @@ variables:
     - *validate_input
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
     - _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
-    - AUTHOR=$(echo "$CI_COMMIT_AUTHOR" | sed -E 's/[^a-zA-Z0-9]//g')
-    - ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${AUTHOR}"
+    - source .tinyenv
+    - SEMVER=$(echo "$VERSION" | sed 's/[.-]/_/g')
+    - ENVIRONMENT_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${SEMVER}"
 
     # Create Python Virtual Environment
     - python -m venv .venv
