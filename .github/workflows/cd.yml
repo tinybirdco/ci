@@ -3,11 +3,6 @@ name: Tinybird CD
 on:
   workflow_call:
     inputs:
-      tb_deploy:
-        description: "use tb deploy based on git releases"
-        required: false
-        type: boolean
-        default: false
       data_project_dir:
         description: "relative path of the folder containing the data project"
         required: false
@@ -72,12 +67,8 @@ jobs:
             DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
             if [ ! -f "$DEPLOY_FILE" ]; then
               echo "$DEPLOY_FILE not found, running default tb deploy command"
-              if ${{ inputs.tb_deploy }}; then
-                tb --semver ${VERSION} deploy --v3 ${CD_FLAGS}
-                tb release ls
-              else
-                tb deploy
-              fi 
+              tb --semver ${VERSION} deploy ${CD_FLAGS}
+              tb release ls
             fi
 
       - name: Custom deployment to the main Workspace
