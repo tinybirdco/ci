@@ -81,6 +81,9 @@ jobs:
 +         tb_host: https://api.tinybird.co
 ```
 
+For complete CICD you need `append_fixtures.sh` new script and to update `exec_test.sh`. You can get them from [scripts folder](https://github.com/tinybirdco/ci/tree/main/scripts)
+
+
 ## Using GitLab
 
 The changes for this provider are a bit different. Apart from updating the CI/CD version, we need to remove the `cleanup_cd_env` step, because it is not needed, and include three new steps for promote, rollback and remove releases.
@@ -139,8 +142,10 @@ cleanup_ci_env:
     variables:
         <<: *cicd_variables
 
-run_cd:
-    extends: .run_cd
+-run_cd:
++deploy_main:
+-    extends: .run_cd
++    .tb_deploy_main
     rules:
         - *cd_config_rule
     variables:
@@ -182,3 +187,4 @@ run_cd:
 +   variables:
 +       <<: *cicd_variables
 ```
+For complete CICD you need `append_fixtures.sh` new script and to update `exec_test.sh`. You can get them from [scripts folder](https://github.com/tinybirdco/ci/tree/main/scripts)
