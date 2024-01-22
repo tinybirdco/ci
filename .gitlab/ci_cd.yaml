@@ -17,7 +17,7 @@ variables:
       echo "Go to the tokens section in your Workspace, copy the 'admin token' and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1;
     fi
 
-.run_ci:
+.tb_deploy_ci:
   stage: ci
   image: ${IMAGE_BASE}
   interruptible: true
@@ -54,8 +54,8 @@ variables:
     # Try delete previous Branch
     - |
       output=$(tb --host $TB_HOST --token $TB_ADMIN_TOKEN env ls)
-      AUTHOR=$(echo "$CI_COMMIT_AUTHOR" | sed -E 's/[^a-zA-Z0-9]//g')
-      BRANCH_NAME="tmp_ci_${_NORMALIZED_BRANCH_NAME}_${AUTHOR}"
+      SEMVER=$(echo "$VERSION" | sed 's/[.-]/_/g')
+      BRANCH_NAME="tmp_ci_${_NORMALIZED_BRANCH_NAME}_${SEMVER}"
 
       # Check if the branch name exists in the output
       if echo "$output" | grep -q "\b$BRANCH_NAME\b"; then
@@ -78,37 +78,83 @@ variables:
 
     # Deploy changes to the test Branch
     - |
-      CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
-      if [ ! -f "$CI_DEPLOY_FILE" ]; then
-        if [ "$TB_DEPLOY" = "true" ]; then
-          tb --semver ${VERSION} deploy --fixtures --populate --wait --v3 ${CI_FLAGS}
-          tb release ls
-        else
-          tb deploy --populate --fixtures --wait
-        fi
+      DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
+      if [ ! -f "$DEPLOY_FILE" ]; then
+        echo "$DEPLOY_FILE not found, running default tb deploy command"
+        tb --semver ${VERSION} deploy ${CI_FLAGS}
+        tb release ls
       fi
 
     # Custom deployment to the test Branch
     - |
-      CI_DEPLOY_FILE=./deploy/${VERSION}/ci-deploy.sh
-      if [ -f "$CI_DEPLOY_FILE" ]; then
-        if ! [ -x "$CI_DEPLOY_FILE" ]; then
-          echo "Error: You do not have permission to execute '$CI_DEPLOY_FILE'. Run:"
-          echo "> chmod +x $CI_DEPLOY_FILE"
+      DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
+      if [ -f "$DEPLOY_FILE" ]; then
+        echo "$DEPLOY_FILE found"
+        if ! [ -x "$DEPLOY_FILE" ]; then
+          echo "Error: You do not have permission to execute '$DEPLOY_FILE'. Run:"
+          echo "> chmod +x $DEPLOY_FILE"
           echo "and commit your changes"
           exit 1
         else
-          $CI_DEPLOY_FILE
+          $DEPLOY_FILE
         fi
       fi
 
+.tb_test:
+  stage: ci
+  image: ${IMAGE_BASE}
+  interruptible: true
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends git
+  script:
+    - *validate_input
+    - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
+    - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
+    - _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
+    - source .tinyenv
+
+    # Create Python Virtual Environment
+    - python -m venv .venv
+    - source .venv/bin/activate
+
+    # Install Tinybird CLI
     - |
-      if [ -f ./scripts/exec_test.sh ]; then
-        ./scripts/exec_test.sh
+      if [ -f "requirements.txt" ]; then
+        pip install -r requirements.txt
+      else
+        pip install tinybird-cli
       fi
 
-    # Run data quality tests
-    - tb test run -v -c 4
+    # Tinybird version
+    - tb --version
+
+    # Check auth
+    - tb --host $TB_HOST --token $TB_ADMIN_TOKEN auth info
+
+    # Use CI Branch
+    - |
+      SEMVER=$(echo "$VERSION" | sed 's/[.-]/_/g')
+      BRANCH_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${SEMVER}"
+      tb --host $TB_HOST --token $TB_ADMIN_TOKEN branch use $BRANCH_NAME
+
+    # Get env token
+    - |
+      export TB_ENV_TOKEN=$(python -c "import json; print(json.load(open('.tinyb'))['token'])")
+
+    # Custom test data operations
+    - |
+      POSTDEPLOY_FILE=./deploy/${VERSION}/postdeploy.sh
+      if [ -f "$POSTDEPLOY_FILE" ]; then
+        echo "$POSTDEPLOY_FILE found"
+        if ! [ -x "$POSTDEPLOY_FILE" ]; then
+          echo "Error: You do not have permission to execute '$POSTDEPLOY_FILE'. Run:"
+          echo "> chmod +x $POSTDEPLOY_FILE"
+          echo "and commit your changes"
+          exit 1
+        else
+          $POSTDEPLOY_FILE
+        fi
+      fi
 
     # Run pipe regression tests
     - echo ${CI_MERGE_REQUEST_LABELS}
@@ -126,7 +172,22 @@ variables:
           ${BASE_CMD} coverage --wait ${LABELS_CMD}
       fi
 
-.run_cd:
+    # Append fixtures
+    - |
+      if [ -f ./scripts/append_fixtures.sh ]; then
+        echo "append_fixtures script found"
+        ./scripts/append_fixtures.sh $VERSION
+      fi
+
+    - |
+      if [ -f ./scripts/exec_test.sh ]; then
+        ./scripts/exec_test.sh $VERSION
+      fi
+
+    # Run data quality tests
+    - tb --semver $VERSION test run -v -c 4
+
+.tb_deploy_main:
   stage: cd
   image: ${IMAGE_BASE}
   interruptible: true
@@ -162,39 +223,53 @@ variables:
 
     # Deploy changes to the main Workspace
     - |
-      CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
-      if [ ! -f "$CD_DEPLOY_FILE" ]; then
-        if [ "$TB_DEPLOY" = "true" ]; then
-          tb --semver ${VERSION} deploy --v3 ${CD_FLAGS}
-          tb release ls
-        else
-          tb deploy
-        fi
+      DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
+      if [ ! -f "$DEPLOY_FILE" ]; then
+        echo "$DEPLOY_FILE not found, running default tb deploy command"
+        tb --semver ${VERSION} deploy ${CD_FLAGS}
+        tb release ls
       fi
 
     # OPTIONALLY Custom deployment to main Workspace. Useful for post CD deploy commands (e.g.: tb pipe populate)
     - |
-      CD_DEPLOY_FILE=./deploy/${VERSION}/cd-deploy.sh
-      if [ -f "$CD_DEPLOY_FILE" ]; then
-        if ! [ -x "$CD_DEPLOY_FILE" ]; then
-          echo "Error: You do not have permission to execute '$CD_DEPLOY_FILE'. Run:"
-          echo "> chmod +x $CD_DEPLOY_FILE"
+      DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
+      if [ -f "$DEPLOY_FILE" ]; then
+        echo "$DEPLOY_FILE found"
+        if ! [ -x "$DEPLOY_FILE" ]; then
+          echo "Error: You do not have permission to execute '$DEPLOY_FILE'. Run:"
+          echo "> chmod +x $DEPLOY_FILE"
           echo "and commit your changes"
           exit 1
         else
-          $CD_DEPLOY_FILE
+          $DEPLOY_FILE
         fi
       fi
 
-.cleanup_ci_branch:
+    # Custom data operations
+    - |
+      POSTDEPLOY_FILE=./deploy/${VERSION}/postdeploy.sh
+      if [ -f "$POSTDEPLOY_FILE" ]; then
+        echo "$POSTDEPLOY_FILE found"
+        if ! [ -x "$POSTDEPLOY_FILE" ]; then
+          echo "Error: You do not have permission to execute '$POSTDEPLOY_FILE'. Run:"
+          echo "> chmod +x $POSTDEPLOY_FILE"
+          echo "and commit your changes"
+          exit 1
+        else
+          $POSTDEPLOY_FILE
+        fi
+      fi
+
+.tb_cleanup_ci_branch:
   stage: cleanup
   image: ${IMAGE_BASE}
   script:
     - *validate_input
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
     - _NORMALIZED_BRANCH_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
-    - AUTHOR=$(echo "$CI_COMMIT_AUTHOR" | sed -E 's/[^a-zA-Z0-9]//g')
-    - BRANCH_NAME="tmp_ci_${_NORMALIZED_BRANCH_NAME}_${AUTHOR}"
+    - source .tinyenv
+    - SEMVER=$(echo "$VERSION" | sed 's/[.-]/_/g')
+    - BRANCH_NAME="tmp_ci_${_NORMALIZED_BRANCH_NAME}_${SEMVER}"
 
     # Create Python Virtual Environment
     - python -m venv .venv
