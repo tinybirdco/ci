@@ -53,7 +53,7 @@ variables:
 
     # Try delete previous Branch
     - |
-      output=$(tb --host $TB_HOST --token $TB_ADMIN_TOKEN env ls)
+      output=$(tb --host $TB_HOST --token $TB_ADMIN_TOKEN branch ls)
       SEMVER=$(echo "$VERSION" | sed 's/[.-]/_/g')
       BRANCH_NAME="tmp_ci_${_NORMALIZED_BRANCH_NAME}_${SEMVER}"
 
@@ -62,7 +62,7 @@ variables:
           tb \
             --host $TB_HOST \
             --token $TB_ADMIN_TOKEN \
-            env rm $BRANCH_NAME \
+            branch rm $BRANCH_NAME \
             --yes
       else
           echo "Skipping clean up: The Branch '$BRANCH_NAME' does not exist."
@@ -73,7 +73,7 @@ variables:
       tb \
         --host $TB_HOST \
         --token $TB_ADMIN_TOKEN \
-        env create ${BRANCH_NAME} \
+        branch create ${BRANCH_NAME} \
         ${_ENV_FLAGS}
 
     # Deploy changes to the test Branch
@@ -110,7 +110,7 @@ variables:
     - *validate_input
     - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
     - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
-    - _NORMALIZED_ENV_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
+    - _NORMALIZED_BRANCH_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
     - source .tinyenv
 
     # Create Python Virtual Environment
@@ -134,7 +134,7 @@ variables:
     # Use CI Branch
     - |
       SEMVER=$(echo "$VERSION" | sed 's/[.-]/_/g')
-      BRANCH_NAME="tmp_ci_${_NORMALIZED_ENV_NAME}_${SEMVER}"
+      BRANCH_NAME="tmp_ci_${_NORMALIZED_BRANCH_NAME}_${SEMVER}"
       tb --host $TB_HOST --token $TB_ADMIN_TOKEN branch use $BRANCH_NAME
 
     # Get env token
