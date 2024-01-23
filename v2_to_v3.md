@@ -2,9 +2,7 @@
 
 ## Using GitHub
 
-You just need to enable `tb_deploy` in all workflows, create a new `release.yml` workflow, and start using (at least) the v3.0.0 version. 
-
-That means, starting from a simple project:
+Releases are enabled by default in v3.0.0. Update your CI/CD workflows to use the v3.0.0 tag so they look like this:
 
 `.github/workflows/tinybird_ci.yml`
 ```diff
@@ -27,7 +25,6 @@ jobs:
 +       uses: tinybirdco/ci/.github/workflows/ci.yml@v3.0.0
         with:
             data_project_dir: .
-+           tb_deploy: true          
         secrets:
             tb_admin_token: ${{ secrets.TB_ADMIN_TOKEN }}
             tb_host: https://api.tinybird.co
@@ -51,11 +48,12 @@ jobs:
 +       uses: tinybirdco/ci/.github/workflows/ci.yml@v3.0.0
         with:
             data_project_dir: .
-+           tb_deploy: true          
         secrets:
             tb_admin_token: ${{ secrets.TB_ADMIN_TOKEN }}
             tb_host: https://api.tinybird.co
 ```
+
+Additionally you should add the `release` workflow.
 
 `.github/workflows/tinybird_release.yml`
 ```diff
@@ -71,9 +69,8 @@ jobs:
 + 
 + jobs:
 +     release: 
-+       uses: tinybirdco/ci/.github/workflows/release.+ yml@v3.0.0
++       uses: tinybirdco/ci/.github/workflows/release.yml@v3.0.0
 +       with:
-+         tb_deploy: true
 +         data_project_dir: .
 +         job_to_run: ${{ inputs.job_to_run }}
 +       secrets:
@@ -81,24 +78,22 @@ jobs:
 +         tb_host: https://api.tinybird.co
 ```
 
-For complete CICD you need `append_fixtures.sh` new script and to update `exec_test.sh`. You can get them from [scripts folder](https://github.com/tinybirdco/ci/tree/main/scripts)
+Additionally add `append_fixtures.sh` and `exec_test.sh` to your `scripts` folder. You can get them from [scripts folder](https://github.com/tinybirdco/ci/tree/main/scripts)
 
 
 ## Using GitLab
 
-The changes for this provider are a bit different. Apart from updating the CI/CD version, we need to remove the `cleanup_cd_env` step, because it is not needed, and include three new steps for promote, rollback and remove releases.
-
-An example in a simple project would be:
+Releases are enabled by default in v3.0.0. Update your CI pipeline to use the v3.0.0 tag so they look like this:
 
 ```diff
 -include: "https://raw.githubusercontent.com/tinybirdco/ci/v2.4.0/.gitlab/ci_cd.yaml"
-+include: "https://raw.githubusercontent.com/tinybirdco/ci/v3.0.1/.gitlab/ci_cd.yaml"
++include: "https://raw.githubusercontent.com/tinybirdco/ci/v3.0.0/.gitlab/ci_cd.yaml"
 
 .ci_config_rules:
 -   - &ci_config_rule
 +   - &ci_config_rule_tests
     if: $CI_PIPELINE_SOURCE == "merge_request_event"
-+   allow_failure: true
++   allow_failure: false
 +   - &ci_config_rule_test_deploy  
 +   if: $CI_PIPELINE_SOURCE == "merge_request_event" 
 +   allow_failure: false  
@@ -114,7 +109,6 @@ An example in a simple project would be:
     TB_HOST: "https://api.tinybird.co"
     TB_ADMIN_TOKEN: $TB_ADMIN_TOKEN
     DATA_PROJECT_DIR: "."
-+   TB_DEPLOY: "true"
 
 -run_ci:
 +deploy_ci:
@@ -128,6 +122,7 @@ An example in a simple project would be:
 
 +tests_ci:
 +   extends: .tb_test
++   needs: ["deploy_ci"]
 +   rules:
 +       - *ci_config_rule_tests
 +   variables:
@@ -145,7 +140,7 @@ cleanup_ci_env:
 -run_cd:
 +deploy_main:
 -    extends: .run_cd
-+    .tb_deploy_main
++    extends: .tb_deploy_main
     rules:
         - *cd_config_rule
     variables:
@@ -160,7 +155,7 @@ cleanup_ci_env:
 -   variables:
 -       <<: *cicd_variables
 
-+run_promote:
++run_release_promote:
 +   extends: .release_promote
 +   dependencies: []
 +   when: manual
@@ -169,7 +164,7 @@ cleanup_ci_env:
 +   variables:
 +       <<: *cicd_variables
 +
-+run_rollback:
++run_release_rollback:
 +   extends: .release_rollback
 +   dependencies: []
 +   when: manual
@@ -178,7 +173,7 @@ cleanup_ci_env:
 +   variables:
 +       <<: *cicd_variables
 +
-+run_rm:
++run_release_rm:
 +   extends: .release_rm
 +   dependencies: []
 +   when: manual
@@ -187,4 +182,5 @@ cleanup_ci_env:
 +   variables:
 +       <<: *cicd_variables
 ```
-For complete CICD you need `append_fixtures.sh` new script and to update `exec_test.sh`. You can get them from [scripts folder](https://github.com/tinybirdco/ci/tree/main/scripts)
+
+Additionally add `append_fixtures.sh` and `exec_test.sh` to your `scripts` folder. You can get them from [scripts folder](https://github.com/tinybirdco/ci/tree/main/scripts)
