@@ -291,7 +291,7 @@ variables:
       tb \
       --host $TB_HOST \
       --token $TB_ADMIN_TOKEN \
-      env rm ${BRANCH_NAME} \
+      branch rm ${BRANCH_NAME} \
       --yes
 
 .release_promote:
