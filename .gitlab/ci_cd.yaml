@@ -224,7 +224,7 @@ variables:
     # Deploy changes to the main Workspace
     - |
       DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
-      if [ ! -f "$DEPLOY_FILE" ]; then
+      if [ ! -f "$DEPLOY_FILE" ] && [ "$VERSION" != "0.0.0" ]; then
         echo "$DEPLOY_FILE not found, running default tb deploy command"
         tb --semver ${VERSION} deploy ${CD_FLAGS}
         tb release ls
