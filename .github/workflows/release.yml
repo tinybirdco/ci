@@ -165,7 +165,7 @@ jobs:
           --oldest-rollback --force --dry-run
 
   rm_oldest_rollback:
-    name: DRY-RUN Remove latest rollback Release
+    name: Remove latest rollback Release
     runs-on: ubuntu-latest
     if: inputs.job_to_run == 'rm_oldest_rollback'
 
@@ -200,4 +200,4 @@ jobs:
           --host ${{ secrets.tb_host }} \
           --token ${{ secrets.tb_admin_token }} \
           release rm  \
-          --oldest-rollback --force --dry-run
+          --oldest-rollback --force --yes
