@@ -245,6 +245,10 @@ variables:
         fi
       fi
 
+    # Get env token
+    - |
+      export TB_ENV_TOKEN=$(python -c "import json; print(json.load(open('.tinyb'))['token'])")
+
     # Custom data operations
     - |
       POSTDEPLOY_FILE=./deploy/${VERSION}/postdeploy.sh
