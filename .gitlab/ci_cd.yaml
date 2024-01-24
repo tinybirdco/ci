@@ -385,3 +385,61 @@ variables:
       --host $TB_HOST \
       --token $TB_ADMIN_TOKEN \
       release rm --semver $VERSION --force --yes
+
+.dry_run_release_rm_oldest_rollback:
+  stage: release
+  image: ${IMAGE_BASE}
+  script:
+    - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
+
+    # Create Python Virtual Environment
+    - python -m venv .venv
+    - source .venv/bin/activate
+
+    # Install Tinybird CLI
+    - |
+      if [ -f "requirements.txt" ]; then
+        pip install -r requirements.txt
+      else
+        pip install tinybird-cli
+      fi
+
+    # Tinybird version
+    - tb --version
+
+    # Promote Release
+    - |
+      source .tinyenv
+      tb \
+      --host $TB_HOST \
+      --token $TB_ADMIN_TOKEN \
+      release rm --oldest-rollback --force --dry-run
+
+.release_rm_oldest_rollback:
+  stage: release
+  image: ${IMAGE_BASE}
+  script:
+    - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
+
+    # Create Python Virtual Environment
+    - python -m venv .venv
+    - source .venv/bin/activate
+
+    # Install Tinybird CLI
+    - |
+      if [ -f "requirements.txt" ]; then
+        pip install -r requirements.txt
+      else
+        pip install tinybird-cli
+      fi
+
+    # Tinybird version
+    - tb --version
+
+    # Promote Release
+    - |
+      source .tinyenv
+      tb \
+      --host $TB_HOST \
+      --token $TB_ADMIN_TOKEN \
+      release rm --oldest-rollback --force --yes
