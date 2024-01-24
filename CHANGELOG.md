@@ -8,8 +8,10 @@ Next Release (v3.0.0)
 - Make deployment idempotent in CI and CD.
 - Remove `ci-deploy.sh` and `cd-deploy.sh` in favour of `deploy.sh`
 - Add `postdeploy.sh` as a custom script to be run before the test job. It can be used to run data operations (such as populates), promote release, etc.
+- Remove `tb deploy`
+- Add `dry_run_rm_oldest_rollback` and `rm_oldest_rollback` jobs to delete the oldest rollback Release by creation date
 
-TODO => How to migrate:
+**Read [this](v2_to_v3.md) to migrate from v2.x to v3.0.0**
 
 
 v2.5.0
