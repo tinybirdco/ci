@@ -181,6 +181,24 @@ cleanup_ci_env:
 +       - *cd_config_rule
 +   variables:
 +       <<: *cicd_variables
++
++dry_run_rm_oldest_rollback:
++    extends: .dry_run_release_rm_oldest_rollback
++    dependencies: []
++    when: manual
++    rules:
++    - *cd_config_rule
++    variables:
++    <<: *cicd_variables
++
++run_rm_oldest_rollback:
++    extends: .release_rm_oldest_rollback
++    dependencies: []
++    when: manual
++    rules:
++    - *cd_config_rule
++    variables:
++    <<: *cicd_variables
 ```
 
 Additionally add `append_fixtures.sh` and `exec_test.sh` to your `scripts` folder. You can get them from [scripts folder](https://github.com/tinybirdco/ci/tree/main/scripts)
