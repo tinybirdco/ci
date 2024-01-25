@@ -13,11 +13,6 @@ on:
         required: false
         type: string
         default: .
-      tb_deploy:
-        description: "use tb deploy based on git releases"
-        required: false
-        type: boolean
-        default: false
     secrets:
       tb_admin_token:
         required: true
@@ -26,7 +21,7 @@ on:
 
 jobs:
   promote:
-    if: inputs.job_to_run == 'promote' && inputs.tb_deploy
+    if: inputs.job_to_run == 'promote'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -62,7 +57,7 @@ jobs:
           --semver $VERSION
   rollback:
     runs-on: ubuntu-latest
-    if: inputs.job_to_run == 'rollback' && inputs.tb_deploy
+    if: inputs.job_to_run == 'rollback'
     defaults:
       run:
         working-directory: ${{ inputs.data_project_dir }}
@@ -96,7 +91,8 @@ jobs:
           release rollback --yes
   rm:
     runs-on: ubuntu-latest
-    if: inputs.job_to_run == 'rm' && inputs.tb_deploy
+    if: inputs.job_to_run == 'rm'
+
     defaults:
       run:
         working-directory: ${{ inputs.data_project_dir }}
@@ -129,3 +125,79 @@ jobs:
           --token ${{ secrets.tb_admin_token }} \
           release rm  \
           --semver $VERSION --force --yes
+
+  dry_run_rm_oldest_rollback:
+    name: DRY-RUN Remove latest rollback Release
+    runs-on: ubuntu-latest
+    if: inputs.job_to_run == 'dry_run_rm_oldest_rollback'
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.data_project_dir }}
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          architecture: "x64"
+          cache: 'pip'
+
+      - name: Validate input
+        run: |
+          [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Go to the tokens section in your Workspace, copy the 'admin token' and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1; }
+      - name: Install Tinybird CLI
+        run: |
+          if [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+          else
+            pip install tinybird-cli
+          fi
+      - name: Tinybird version
+        run: tb --version
+
+      - name: Remove Release
+        run: |
+          source .tinyenv
+          tb \
+          --host ${{ secrets.tb_host }} \
+          --token ${{ secrets.tb_admin_token }} \
+          release rm  \
+          --oldest-rollback --force --dry-run
+
+  rm_oldest_rollback:
+    name: Remove latest rollback Release
+    runs-on: ubuntu-latest
+    if: inputs.job_to_run == 'rm_oldest_rollback'
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.data_project_dir }}
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          architecture: "x64"
+          cache: 'pip'
+
+      - name: Validate input
+        run: |
+          [[ "${{ secrets.tb_admin_token }}" ]] || { echo "Go to the tokens section in your Workspace, copy the 'admin token' and set TB_ADMIN_TOKEN as a Secret in your Git repository"; exit 1; }
+      - name: Install Tinybird CLI
+        run: |
+          if [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+          else
+            pip install tinybird-cli
+          fi
+      - name: Tinybird version
+        run: tb --version
+
+      - name: Remove Release
+        run: |
+          source .tinyenv
+          tb \
+          --host ${{ secrets.tb_host }} \
+          --token ${{ secrets.tb_admin_token }} \
+          release rm  \
+          --oldest-rollback --force --yes
