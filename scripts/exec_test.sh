@@ -11,6 +11,7 @@ run_test() {
     if [[ -n $VERSION ]]; then
         sed -i "s/tb/tb --semver $VERSION/" $t
     fi
+    echo "** $(cat $t)"
     tmpfile=$(mktemp)
     if bash $t $2 >$tmpfile; then
         if diff -B ${t}.result $tmpfile; then
