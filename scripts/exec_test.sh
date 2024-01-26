@@ -9,26 +9,21 @@ run_test() {
     echo "** Running $t **"
     # Check if VERSION is provided
     if [[ -n $VERSION ]]; then
-        echo "VERSION found: $VERSION for test $t"
         sed -i "s/tb/tb --semver $VERSION/" $t
-    else
-        echo "VERSION not found for test $t"
     fi
-    echo "** Contents of $t after modification (if any):"
-    cat $t
     tmpfile=$(mktemp)
     if bash $t $2 >$tmpfile; then
         if diff -B ${t}.result $tmpfile; then
             echo "Test $t: OK";
         else
-            echo "Test $t failed, diff:";
+            echo "🚨 ERROR: Test $t failed, diff:";
             diff -B ${t}.result $tmpfile
             cat $tmpfile
             rm $tmpfile
             return 1
         fi
     else
-        echo "Error: Test $t failed with bash command exit code $?"
+        echo "🚨 ERROR: Test $t failed with bash command exit code $?"
         cat $tmpfile
         rm $tmpfile
         return 1
