@@ -190,7 +190,7 @@ jobs:
 
       - name: Get regression labels
         id: regression_labels
-        uses: SamirMarin/get-labels-action@v0
+        uses: alrocar/get-labels-action@v1.0.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           label_key: regression
