@@ -14,6 +14,10 @@ on:
         required: false
         type: boolean
         default: false
+      git_depth:
+        description: "Number of commits to fetch. 0 indicates all history for all branches and tags"
+        type: number
+        default: 300
     secrets:
       tb_admin_token:
         required: true
@@ -64,7 +68,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
         with:
-          fetch-depth: 300
+          fetch-depth: ${{ inputs.git_depth }}
           ref: ${{ github.event.pull_request.head.sha }}
       - uses: actions/setup-python@v5
         with:
@@ -166,7 +170,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
         with:
-          fetch-depth: 300
+          fetch-depth: ${{ inputs.data_project_dir }}
           ref: ${{ github.event.pull_request.head.sha }}
       - uses: actions/setup-python@v5
         with:
