@@ -67,6 +67,22 @@ jobs:
       - name: Check auth
         run: tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} auth info
 
+      # Get a list of changed Tinybird files
+      - name: Get changed files
+        id: files
+        uses: tj-actions/changed-files@v39
+        with:
+          files: |
+            **/*.{datasource,incl,pipe}
+
+      - name: Check formatting
+        if: ${{ steps.files.outputs.any_changed == 'true' }}
+        shell: bash
+        run: |
+          for file in ${{ steps.files.outputs.all_changed_files }}; do
+            tb fmt --diff "$file"
+          done
+
       - name: Try delete previous Branch
         run: |
           output=$(tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} branch ls)
