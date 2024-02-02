@@ -16,9 +16,57 @@ on:
         required: true
 
 jobs:
+  check:
+    name: Check format
+    runs-on: ubuntu-22.04
+    if: ${{ github.event.action != 'closed' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Tinybird CLI
+        run: |
+          if [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+          else
+            pip install tinybird-cli
+          fi
+
+      # Get a list of changed Tinybird files
+      - name: Get changed files
+        id: files
+        uses: tj-actions/changed-files@v42
+        with:
+          files: |
+            **/*.{datasource,incl,pipe}
+
+      # We check that all the files have a correct syntax
+      - name: Check all the files
+        if: ${{ steps.files.outputs.any_changed == 'true' }}
+        shell: bash
+        run: |
+          for file in ${{ steps.files.outputs.all_changed_files }}; do
+            if [[ $file != *.incl ]]; then
+              tb check "$file"
+            fi
+          done
+
+      # Check formatting
+      - name: Check formatting
+        if: ${{ steps.files.outputs.any_changed == 'true' }}
+        shell: bash
+        run: |
+          for file in ${{ steps.files.outputs.all_changed_files }}; do
+            tb fmt --diff "$file"
+          done
+
   deploy:
     name: Deploy to CI Branch
     runs-on: ubuntu-latest
+    needs:
+      - check
     defaults:
       run:
         working-directory: ${{ inputs.data_project_dir }}
@@ -26,7 +74,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
         with:
-          fetch-depth: 0
+          fetch-depth: 300
           ref: ${{ github.event.pull_request.head.sha }}
       - uses: actions/setup-python@v5
         with:
@@ -66,22 +114,6 @@ jobs:
 
       - name: Check auth
         run: tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} auth info
-
-      # Get a list of changed Tinybird files
-      - name: Get changed files
-        id: files
-        uses: tj-actions/changed-files@v42.0.2
-        with:
-          files: |
-            **/*.{datasource,incl,pipe}
-
-      - name: Check formatting
-        if: ${{ steps.files.outputs.any_changed == 'true' }}
-        shell: bash
-        run: |
-          for file in ${{ steps.files.outputs.all_changed_files }}; do
-            tb fmt --diff "$file"
-          done
 
       - name: Try delete previous Branch
         run: |
