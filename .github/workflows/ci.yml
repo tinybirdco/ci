@@ -17,8 +17,8 @@ on:
 
 jobs:
   check:
-    name: Check format
-    runs-on: ubuntu-22.04
+    name: Datafiles checks
+    runs-on: ubuntu-latest
     if: ${{ github.event.action != 'closed' }}
     steps:
       - name: Checkout code
@@ -34,7 +34,6 @@ jobs:
             pip install tinybird-cli
           fi
 
-      # Get a list of changed Tinybird files
       - name: Get changed files
         id: files
         uses: tj-actions/changed-files@v42
@@ -42,7 +41,6 @@ jobs:
           files: |
             **/*.{datasource,incl,pipe}
 
-      # We check that all the files have a correct syntax
       - name: Check all the files
         if: ${{ steps.files.outputs.any_changed == 'true' }}
         shell: bash
@@ -53,7 +51,6 @@ jobs:
             fi
           done
 
-      # Check formatting
       - name: Check formatting
         if: ${{ steps.files.outputs.any_changed == 'true' }}
         shell: bash
@@ -97,7 +94,6 @@ jobs:
           grep -v '^#' .tinyenv >> $GITHUB_ENV
           echo >> $GITHUB_ENV # Ensures new line at the end of the file
 
-
       - name: Install Tinybird CLI
         run: |
           if [ -f "requirements.txt" ]; then
@@ -108,9 +104,6 @@ jobs:
 
       - name: Tinybird version
         run: tb --version
-
-      - name: Check all the data files syntax
-        run: tb check  
 
       - name: Check auth
         run: tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} auth info
