@@ -25,10 +25,6 @@ variables:
     - apt-get update && apt-get install -y --no-install-recommends git
   script:
     - *validate_input
-    - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
-    - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
-    - _NORMALIZED_BRANCH_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
-    - source .tinyenv
 
     # Create Python Virtual Environment
     - python -m venv .venv
@@ -45,8 +41,28 @@ variables:
     # Tinybird version
     - tb --version
 
-    # Check all the data files syntax
-    - tb check
+    # Get changed files
+    - ALL_CHANGED_FILES=$(git diff --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA | grep -E '.*\.(datasource|incl|pipe)' || true)
+    - echo "Changed files: $ALL_CHANGED_FILES"
+
+    # Check syntax of changed files
+    - |
+      for file in $ALL_CHANGED_FILES; do
+        if [[ $file != *.incl ]]; then
+          tb check "$file"
+        fi
+      done
+
+    # Check format of changed files
+    - |
+      for file in $ALL_CHANGED_FILES; do
+        tb fmt --diff "$file"
+      done
+
+    - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
+    - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
+    - _NORMALIZED_BRANCH_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
+    - source .tinyenv
 
     # Check auth
     - tb --host $TB_HOST --token $TB_ADMIN_TOKEN auth info
