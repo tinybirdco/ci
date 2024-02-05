@@ -1,5 +1,10 @@
-Next Release (v3.0.0)
-=====================
+v3.1.0
+========
+
+- Add new `check` job in GitHub Actions. It checks syntax and forces format Datafiles so there are no mismatches in the project when working from the UI and git.
+
+v3.0.0
+========
 
 - Add `CI_FLAGS` and `CD_FLAGS` env vars to `tb deploy`, they can be defined per Data Project and PR via `.tinyenv`
 - Update rollback job to include the `--yes` flag to `tb release rollback`
