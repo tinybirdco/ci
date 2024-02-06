@@ -21,6 +21,39 @@ on:
         required: true
 
 jobs:
+  check:
+    name: Datafiles checks
+    runs-on: ubuntu-latest
+    if: ${{ inputs.tb_format == 'true' && github.event.action != 'closed' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Tinybird CLI
+        run: |
+          if [ -f "${{ inputs.data_project_dir }}/requirements.txt" ]; then
+            pip install -r ${{ inputs.data_project_dir }}/requirements.txt
+          else
+            pip install tinybird-cli
+          fi
+
+      - name: Get changed files
+        id: files
+        uses: tj-actions/changed-files@v42
+        with:
+          files: |
+            **/*.{datasource,incl,pipe}
+
+      - name: Check formatting
+        if: ${{ steps.files.outputs.any_changed == 'true' }}
+        shell: bash
+        run: |
+          for file in ${{ steps.files.outputs.all_changed_files }}; do
+            tb fmt --diff "$file"
+          done
+
   deploy:
     name: Deploy to CI Branch
     runs-on: ubuntu-latest
@@ -65,30 +98,8 @@ jobs:
       - name: Tinybird version
         run: tb --version
 
-      - name: Get changed files
-        id: files
-        uses: tj-actions/changed-files@v42
-        with:
-          files: |
-            **/*.{datasource,incl,pipe}
-
-      - name: Check formatting
-        if: ${{ steps.files.outputs.any_changed == 'true' && inputs.tb_format == 'true' }}
-        shell: bash
-        run: |
-          for file in ${{ steps.files.outputs.all_changed_files }}; do
-            tb fmt --diff "$file"
-          done
-
       - name: Check all the data files syntax
-        if: ${{ steps.files.outputs.any_changed == 'true'}}
-        shell: bash
-        run: |
-          for file in ${{ steps.files.outputs.all_changed_files }}; do
-            if [[ $file != *.incl ]]; then
-              tb check "$file"
-            fi
-          done
+        run: tb check
 
       - name: Check auth
         run: tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} auth info
