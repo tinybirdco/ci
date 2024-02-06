@@ -1,7 +1,7 @@
 v3.1.0
 ========
 
-- Add new `check` job in GitHub Actions. It checks syntax and forces format Datafiles so there are no mismatches in the project when working from the UI and git. To activate it create a `TB_FORMAT` env variable in GitHub and set it to `true`
+- Add new `check` job in GitHub Actions. It forces format Datafiles so there are no mismatches in the project when working from the UI and git. To activate it create set a `tb_format: true` input `tinybird_ci.yml`
 - Remove `rollback` and `rm` jobs from GitHub Actions
 - Remove `release_rollback` and `release_rm` from GitLab CI.
 
