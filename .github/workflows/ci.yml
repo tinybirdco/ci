@@ -9,6 +9,11 @@ on:
         required: false
         type: string
         default: .
+      tb_format:
+        description: "true to force formatting of Datafiles"
+        required: false
+        type: boolean
+        default: false
     secrets:
       tb_admin_token:
         required: true
@@ -19,7 +24,7 @@ jobs:
   check:
     name: Datafiles checks
     runs-on: ubuntu-latest
-    if: $TB_FORMAT == 'true' && ${{ github.event.action != 'closed'}}
+    if: ${{ inputs.tb_format == 'true' && github.event.action != 'closed' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
