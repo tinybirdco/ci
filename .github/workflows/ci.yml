@@ -19,7 +19,7 @@ jobs:
   check:
     name: Datafiles checks
     runs-on: ubuntu-latest
-    if: env.TB_FORMAT == 'true' && ${{ github.event.action != 'closed'}}
+    if: $TB_FORMAT == 'true' && ${{ github.event.action != 'closed'}}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
