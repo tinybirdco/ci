@@ -19,7 +19,7 @@ jobs:
   check:
     name: Datafiles checks
     runs-on: ubuntu-latest
-    if: ${{ github.event.action != 'closed' }}
+    if: env.TB_FORMAT == 'true' && ${{ github.event.action != 'closed'}}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -40,16 +40,6 @@ jobs:
         with:
           files: |
             **/*.{datasource,incl,pipe}
-
-      - name: Check all the files
-        if: ${{ steps.files.outputs.any_changed == 'true' }}
-        shell: bash
-        run: |
-          for file in ${{ steps.files.outputs.all_changed_files }}; do
-            if [[ $file != *.incl ]]; then
-              tb check "$file"
-            fi
-          done
 
       - name: Check formatting
         if: ${{ steps.files.outputs.any_changed == 'true' }}
@@ -104,6 +94,9 @@ jobs:
 
       - name: Tinybird version
         run: tb --version
+
+      - name: Check all the data files syntax
+        run: tb check  
 
       - name: Check auth
         run: tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} auth info
