@@ -1,3 +1,9 @@
+v3.1.1 (Next release)
+=====================
+
+- Don't include Pull Request labels in the `tb branch regression-tests` command if there is a `regression.yaml` config file defined
+
+
 v3.1.0
 ========
 
