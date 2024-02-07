@@ -13,23 +13,23 @@ Nothing to do, remove and rollback release jobs do not exist anymore, since they
       variables:
         <<: *cicd_variables
 
-    run_rollback:
-      extends: .release_rollback
-      dependencies: []
-      when: manual
-      rules:
-        - *cd_config_rule
-      variables:
-        <<: *cicd_variables
-
-    run_rm:
-      extends: .release_rm
-      dependencies: []
-      when: manual
-      rules:
-        - *cd_config_rule
-      variables:
-        <<: *cicd_variables
+-    run_rollback:
+-      extends: .release_rollback
+-      dependencies: []
+-      when: manual
+-      rules:
+-        - *cd_config_rule
+-      variables:
+-        <<: *cicd_variables
+-
+-    run_rm:
+-      extends: .release_rm
+-      dependencies: []
+-      when: manual
+-      rules:
+-        - *cd_config_rule
+-      variables:
+-        <<: *cicd_variables
 
     dry_run_rm_oldest_rollback:
       extends: .dry_run_release_rm_oldest_rollback
