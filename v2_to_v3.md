@@ -1,3 +1,41 @@
+# How to migrate Tinybird Data Projects v3.0.0 to v3.1.1
+
+## Using GitHub
+
+Nothing to do, remove and rollback release jobs do not exist anymore, since they could be executed by mistake. You should run them via API, Dashboard or CLI.
+
+## Using GitLab
+
+```diff
+-include: "https://raw.githubusercontent.com/tinybirdco/ci/v3.0.0/.gitlab/ci_cd.yaml"
++include: "https://raw.githubusercontent.com/tinybirdco/ci/v3.0.1/.gitlab/ci_cd.yaml"
+
+      variables:
+        <<: *cicd_variables
+
+    run_rollback:
+      extends: .release_rollback
+      dependencies: []
+      when: manual
+      rules:
+        - *cd_config_rule
+      variables:
+        <<: *cicd_variables
+
+    run_rm:
+      extends: .release_rm
+      dependencies: []
+      when: manual
+      rules:
+        - *cd_config_rule
+      variables:
+        <<: *cicd_variables
+
+    dry_run_rm_oldest_rollback:
+      extends: .dry_run_release_rm_oldest_rollback
+      dependencies: []
+```
+
 # How to migrate Tinybird Data Projects v2 to v3
 
 ## Using GitHub
