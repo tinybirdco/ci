@@ -8,7 +8,7 @@ Nothing to do, remove and rollback release jobs do not exist anymore, since they
 
 ```diff
 -include: "https://raw.githubusercontent.com/tinybirdco/ci/v3.0.0/.gitlab/ci_cd.yaml"
-+include: "https://raw.githubusercontent.com/tinybirdco/ci/v3.0.1/.gitlab/ci_cd.yaml"
++include: "https://raw.githubusercontent.com/tinybirdco/ci/v3.1.0/.gitlab/ci_cd.yaml"
 
       variables:
         <<: *cicd_variables
