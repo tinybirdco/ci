@@ -165,8 +165,8 @@ variables:
       BASE_CMD="tb env regression-tests"
       LABELS_CMD="$(echo ${REGRESSION_LABELS} | tr , ' ')"
       if [ -f ${CONFIG_FILE} ]; then
-          echo "Config file '${CONFIG_FILE}' found, skipping regression labels if present"
-          ${BASE_CMD} -f ${CONFIG_FILE} --wait
+          echo "Config file '${CONFIG_FILE}' found, adding merge request labels as options"
+          ${BASE_CMD} -f ${CONFIG_FILE} --wait ${LABELS_CMD}
       else
           echo "Config file not found at '${CONFIG_FILE}', running with default values"
           ${BASE_CMD} coverage --wait ${LABELS_CMD}
