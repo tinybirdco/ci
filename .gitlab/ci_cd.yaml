@@ -25,14 +25,17 @@ variables:
     - apt-get update && apt-get install -y --no-install-recommends git
   script:
     - *validate_input
-    - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
-    - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
-    - _NORMALIZED_BRANCH_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
-    - source .tinyenv
+    # set envvars
+    - |
+      _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
+      cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
+      _NORMALIZED_BRANCH_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
+      source .tinyenv
 
     # Create Python Virtual Environment
-    - python -m venv .venv
-    - source .venv/bin/activate
+    - |
+      python -m venv .venv
+      source .venv/bin/activate
 
     # Install Tinybird CLI
     - |
@@ -42,14 +45,11 @@ variables:
         pip install tinybird-cli
       fi
 
-    # Tinybird version
-    - tb --version
-
-    # Check all the data files syntax
-    - tb check
-
-    # Check auth
-    - tb --host $TB_HOST --token $TB_ADMIN_TOKEN auth info
+    # Checks
+    - |
+      tb --version
+      tb check
+      tb --host $TB_HOST --token $TB_ADMIN_TOKEN auth info
 
     # Try delete previous Branch
     - |
@@ -108,14 +108,16 @@ variables:
     - apt-get update && apt-get install -y --no-install-recommends git
   script:
     - *validate_input
-    - _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
-    - cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
-    - _NORMALIZED_BRANCH_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
-    - source .tinyenv
+    - |
+      _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
+      cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
+      _NORMALIZED_BRANCH_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
+      source .tinyenv
 
     # Create Python Virtual Environment
-    - python -m venv .venv
-    - source .venv/bin/activate
+    - |
+      python -m venv .venv
+      source .venv/bin/activate
 
     # Install Tinybird CLI
     - |
@@ -125,11 +127,10 @@ variables:
         pip install tinybird-cli
       fi
 
-    # Tinybird version
-    - tb --version
-
-    # Check auth
-    - tb --host $TB_HOST --token $TB_ADMIN_TOKEN auth info
+    # Checks
+    - |
+      tb --version
+      tb --host $TB_HOST --token $TB_ADMIN_TOKEN auth info
 
     # Use CI Branch
     - |
@@ -157,10 +158,10 @@ variables:
       fi
 
     # Run pipe regression tests
-    - echo ${CI_MERGE_REQUEST_LABELS}
-    - REGRESSION_LABELS=$(echo "${CI_MERGE_REQUEST_LABELS}" | awk -F, '{for (i=1; i<=NF; i++) if ($i ~ /^--/) print $i}' ORS=',' | sed 's/,$//')
-    - echo "Regression labels: ${REGRESSION_LABELS}"
     - |
+      echo ${CI_MERGE_REQUEST_LABELS}
+      REGRESSION_LABELS=$(echo "${CI_MERGE_REQUEST_LABELS}" | awk -F, '{for (i=1; i<=NF; i++) if ($i ~ /^--/) print $i}' ORS=',' | sed 's/,$//')
+      echo "Regression labels: ${REGRESSION_LABELS}"
       CONFIG_FILE=./tests/regression.yaml
       BASE_CMD="tb env regression-tests"
       LABELS_CMD="$(echo ${REGRESSION_LABELS} | tr , ' ')"
