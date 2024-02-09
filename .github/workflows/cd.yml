@@ -10,6 +10,7 @@ on:
         default: .
       git_depth:
         description: "Number of commits to fetch. 0 indicates all history for all branches and tags"
+        required: false
         type: number
         default: 300
     secrets:
