@@ -5,7 +5,8 @@
     <img src="./img/1.png" alt="UI not connected to Git yet" title="UI not connected to Git yet" width="600">
 
 
-2. Click `Connect to Git` to connect your GitHub repository using the Branch + Pull Request approach. As a result of this step, you will have a new branch (and an open Pull Request) in your repository. From this moment, you will see this in the UI:
+2. Click `Connect to Git` to connect your GitHub repository using the Branch + Pull Request approach. As a result of this step, you will have a new branch (and an open Pull Request) in your repository. You will find changes related to format of the existing resources, new files and scripts. In the case you're using VERSION by file feature you will se new auto-generated resource files and some references changed in your code. Take your time to review it.
+From this moment, you will see this in the UI:
 
     <img src="./img/2.png" alt="Connection in progress" title="Connection in progress" width="600">
 
