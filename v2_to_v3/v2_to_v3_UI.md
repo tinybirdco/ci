@@ -31,8 +31,7 @@ From this moment, you will see this in the UI:
 
 7. Once the CD Workflow finishes, you should see this in the UI:
 
-    <img src="./img/3.png" alt="UI connected to Git" title="Ui connected to Git" width="600">
-
+    ![UI connected to Git](./img/3.png)
 
 🎉 Congratulations! You're done, now you can enjoy the full Version Control experience using the UI or/and Git + Data Files. 
 If you had any problem during the migration don't hesitate to reach us.
