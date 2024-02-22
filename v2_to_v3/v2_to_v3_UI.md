@@ -25,7 +25,9 @@ From this moment, you will see this in the UI:
    
 5. Once the CD workflow finishes (it has to fail for the same reason of the previous step). Go to the repository's main branch, get the latest commit (`git log -n 1`) and execute `tb init --override-commit $LAST_COMMIT`.
 
-6. Create a new branch, change the `.tinyenv` version to `0.0.1`. Create a PR and once all the checks passed. Merge it.
+6. Create a new branch, change the `.tinyenv` version to `0.0.1`. Create a PR and once all the checks passed. Check there are no changes and merge it.
+
+    <img src="./img/no-diffs.jpg" alt="Connection in progress" title="Connection in progress" width="1000">
 
 7. Once the CD Workflow finishes, you should see this in the UI:
 
