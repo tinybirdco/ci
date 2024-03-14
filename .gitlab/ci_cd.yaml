@@ -82,6 +82,8 @@ variables:
       if [ ! -f "$DEPLOY_FILE" ]; then
         echo "$DEPLOY_FILE not found, running default tb deploy command"
         tb --semver ${VERSION} deploy ${CI_FLAGS}
+        DEPLOY_OUTPUT=$(tb --semver ${VERSION} deploy ${CI_FLAGS} | tee /dev/tty)
+        DEPLOY_RESOURCE_NAMES=$(echo "$DEPLOY_OUTPUT" | grep -o 'Running .*' | awk '{print $2}' | tr -d "'")
         tb release ls
       fi
 
@@ -182,7 +184,7 @@ variables:
 
     - |
       if [ -f ./scripts/exec_test.sh ]; then
-        ./scripts/exec_test.sh $VERSION
+        ./scripts/exec_test.sh $VERSION $DEPLOY_RESOURCE_NAMES
       fi
 
     # Run data quality tests
