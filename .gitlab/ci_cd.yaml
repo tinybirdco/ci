@@ -25,12 +25,12 @@ variables:
     - apt-get update && apt-get install -y --no-install-recommends git
   artifacts:
     paths:
-      - deploy.env
+      - /tmp/deploy.env
   script:
     - *validate_input
     # set envvars
     - |
-      touch deploy.env
+      touch /tmp/deploy.env
       _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
       cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
       _NORMALIZED_BRANCH_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
@@ -88,9 +88,9 @@ variables:
         DEPLOY_OUTPUT=$(tb --semver ${VERSION} deploy ${CI_FLAGS})
         echo "$DEPLOY_OUTPUT"
         DEPLOY_RESOURCE_NAMES=$(echo "$DEPLOY_OUTPUT" | grep -o 'Running .*' | awk '{print $2}' | tr -d "'")
-        echo "$DEPLOY_RESOURCE_NAMES" > deploy.env
-        echo "cat deploy.env"
-        cat deploy.env
+        echo "$DEPLOY_RESOURCE_NAMES" > /tmp/deploy.env
+        echo "cat /tmp/deploy.env"
+        cat /tmp/deploy.env
         tb release ls
       fi
 
