@@ -86,9 +86,10 @@ variables:
       if [ ! -f "$DEPLOY_FILE" ]; then
         echo "$DEPLOY_FILE not found, running default tb deploy command"
         DEPLOY_OUTPUT=$(tb --semver ${VERSION} deploy ${CI_FLAGS})
-        echo -e "$DEPLOY_OUTPUT"
-        DEPLOY_RESOURCE_NAMES=$(echo -e "$DEPLOY_OUTPUT" | grep -o 'Running .*' | awk '{print $2}' | tr -d "'")
-        echo -e "$DEPLOY_RESOURCE_NAMES"
+        echo "after command"
+        echo "$DEPLOY_OUTPUT"
+        DEPLOY_RESOURCE_NAMES=$(echo "$DEPLOY_OUTPUT" | grep -o 'Running .*' | awk '{print $2}' | tr -d "'")
+        echo "$DEPLOY_RESOURCE_NAMES"
         echo "DEPLOY_RESOURCE_NAMES=$DEPLOY_RESOURCE_NAMES" > deploy.env
         tb release ls
       fi
