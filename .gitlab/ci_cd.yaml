@@ -89,6 +89,7 @@ variables:
         echo "$DEPLOY_OUTPUT"
         DEPLOY_RESOURCE_NAMES=$(echo "$DEPLOY_OUTPUT" | grep -o 'Running .*' | awk '{print $2}' | tr -d "'")
         echo "$DEPLOY_RESOURCE_NAMES" > deploy.env
+        echo "cat deploy.env"
         cat deploy.env
         tb release ls
       fi
