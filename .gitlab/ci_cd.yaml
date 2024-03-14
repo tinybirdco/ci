@@ -89,8 +89,10 @@ variables:
         echo "after command"
         echo "$DEPLOY_OUTPUT"
         DEPLOY_RESOURCE_NAMES=$(echo "$DEPLOY_OUTPUT" | grep -o 'Running .*' | awk '{print $2}' | tr -d "'")
-        echo "$DEPLOY_RESOURCE_NAMES"
+        echo "resource names: $DEPLOY_RESOURCE_NAMES"
         echo "DEPLOY_RESOURCE_NAMES=$DEPLOY_RESOURCE_NAMES" > deploy.env
+        echo "deploy.env"
+        cat deploy.env
         tb release ls
       fi
 
