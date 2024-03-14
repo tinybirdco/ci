@@ -3,6 +3,7 @@ set -euxo pipefail
 
 export TB_VERSION_WARNING=0
 export VERSION=$1
+export RESOURCE_NAMES=$2
 
 run_test() {
     t=$1
@@ -55,7 +56,13 @@ run_test() {
 export -f run_test
 
 fail=0
-find ./tests -name "*.test" -print0 | xargs -0 -I {} -P 4 bash -c 'run_test "$@"' _ {} $VERSION || fail=1
+if [ -v RESOURCE_NAMES ]; then
+    for name in $RESOURCE_NAMES; do
+        find ./tests -type f -name "*.test" -exec grep -q "$name" {} \; -print0 | xargs -0 -I {} -P 4 bash -c 'run_test "$@"' _ {} $VERSION || fail=1
+    done
+else
+    find ./tests -name "*.test" -print0 | xargs -0 -I {} -P 4 bash -c 'run_test "$@"' _ {} $VERSION || fail=1
+fi
 
 if [ $fail == 1 ]; then
   exit -1;
