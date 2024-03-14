@@ -23,10 +23,14 @@ variables:
   interruptible: true
   before_script:
     - apt-get update && apt-get install -y --no-install-recommends git
+  artifacts:
+    paths:
+      - deploy.env
   script:
     - *validate_input
     # set envvars
     - |
+      touch deploy.env
       _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
       cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
       _NORMALIZED_BRANCH_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
@@ -83,6 +87,7 @@ variables:
         echo "$DEPLOY_FILE not found, running default tb deploy command"
         DEPLOY_OUTPUT=$(tb --semver ${VERSION} deploy ${CI_FLAGS} | tee)
         DEPLOY_RESOURCE_NAMES=$(echo "$DEPLOY_OUTPUT" | grep -o 'Running .*' | awk '{print $2}' | tr -d "'")
+        echo "DEPLOY_RESOURCE_NAMES=$DEPLOY_RESOURCE_NAMES" > deploy.env
         tb release ls
       fi
 
@@ -114,6 +119,7 @@ variables:
       cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
       _NORMALIZED_BRANCH_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
       source .tinyenv
+      source deploy.env
 
     # Create Python Virtual Environment
     - |
