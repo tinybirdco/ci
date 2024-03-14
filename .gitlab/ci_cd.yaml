@@ -122,7 +122,9 @@ variables:
       _NORMALIZED_BRANCH_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
       source .tinyenv
       if [ -f deploy.env ]; then
-          export DEPLOY_RESOURCE_NAMES=$(cat deploy.env)
+        export DEPLOY_RESOURCE_NAMES=$(cat deploy.env)
+      else
+        echo "deploy.env not found"
       fi
 
     # Create Python Virtual Environment
