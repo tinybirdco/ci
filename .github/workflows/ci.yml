@@ -130,7 +130,7 @@ jobs:
               echo "Skipping clean up: The Branch '$BRANCH_NAME' does not exist."
           fi
 
-      - name: Create new test Branch with data
+      - name: Create new test Branch
         run: |
           tb \
           --host ${{ secrets.tb_host }} \
