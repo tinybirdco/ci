@@ -19,6 +19,11 @@ on:
         required: false
         type: number
         default: 300
+      use_last_partition:
+        description: "true to include --last-partition flag when creating branches"
+        required: false
+        type: boolean
+        default: true
     secrets:
       tb_admin_token:
         required: true
@@ -83,7 +88,7 @@ jobs:
 
       - name: Set environment variables
         run: |
-          _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
+          [[ -z "${_ENV_FLAGS}" ]] && _ENV_FLAGS="${{ inputs.use_last_partition && '--last-partition ' || '' }}--wait"
           _NORMALIZED_BRANCH_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
           GIT_BRANCH=${GITHUB_HEAD_REF}
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV

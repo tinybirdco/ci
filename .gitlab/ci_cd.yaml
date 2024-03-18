@@ -9,6 +9,7 @@ variables:
   PYTHON_VERSION: "3.11"
   IMAGE_BASE: python:${PYTHON_VERSION}-slim-bullseye
   GIT_DEPTH: "300"
+  USE_LAST_PARTITION: "true"
 
 
 .validate_input: &validate_input
@@ -28,6 +29,7 @@ variables:
     # set envvars
     - |
       _ENV_FLAGS="${ENV_FLAGS:=--last-partition --wait}"
+      [ "${USE_LAST_PARTITION}" = "false" ] && _ENV_FLAGS="--last-partition --wait" || _ENV_FLAGS="--wait"
       cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
       _NORMALIZED_BRANCH_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
       source .tinyenv
@@ -68,7 +70,7 @@ variables:
           echo "Skipping clean up: The Branch '$BRANCH_NAME' does not exist."
       fi
 
-    # Create new test Branch with data
+    # Create new test Branch
     - |
       tb \
         --host $TB_HOST \
