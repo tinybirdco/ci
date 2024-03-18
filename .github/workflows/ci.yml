@@ -88,6 +88,8 @@ jobs:
 
       - name: Set environment variables
         run: |
+          echo "${{ inputs.use_last_partition }}"
+          echo "${{ inputs.use_last_partition && '--last-partition ' || '' }}--wait"
           [[ -z "${_ENV_FLAGS}" ]] && _ENV_FLAGS="${{ inputs.use_last_partition && '--last-partition ' || '' }}--wait"
           _NORMALIZED_BRANCH_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
           GIT_BRANCH=${GITHUB_HEAD_REF}
