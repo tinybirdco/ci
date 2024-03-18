@@ -28,7 +28,7 @@ variables:
     - *validate_input
     # set envvars
     - |
-      [ "${USE_LAST_PARTITION}" = "false" ] && _ENV_FLAGS="--last-partition --wait" || _ENV_FLAGS="--wait"
+      [ "${USE_LAST_PARTITION}" = "false" ] && _ENV_FLAGS="--wait" || _ENV_FLAGS="--last-partition --wait"
       cd $CI_PROJECT_DIR/$DATA_PROJECT_DIR
       _NORMALIZED_BRANCH_NAME=$(echo $DATA_PROJECT_DIR | rev | cut -d "/" -f 1 | rev | tr '.-' '_')
       source .tinyenv
