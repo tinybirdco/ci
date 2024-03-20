@@ -3,7 +3,7 @@ v3.1.1 (Next release)
 
 - Feedback improved when adding Pull Request labels in the `tb branch regression-tests` command if there is a `regression.yaml` config file defined
 - Added `git_depth` on GitHub `cd.yml` and `ci.yml` in order to parametrize git checkout depth [MR](https://github.com/tinybirdco/ci/pull/71)
-- Added inputs to make optional the option `--last-partition` when branches are created
+- Added `use_last_partition` input variable. Set to false to create branches in CI with no data.
 
 
 v3.1.0
