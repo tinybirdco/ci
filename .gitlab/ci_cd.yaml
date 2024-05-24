@@ -81,7 +81,7 @@ variables:
       DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
       if [ ! -f "$DEPLOY_FILE" ]; then
         echo "$DEPLOY_FILE not found, running default tb deploy command"
-        tb --semver ${VERSION} deploy ${CI_FLAGS}
+        tb deploy ${CI_FLAGS}
         tb release ls
       fi
 
@@ -177,16 +177,16 @@ variables:
     - |
       if [ -f ./scripts/append_fixtures.sh ]; then
         echo "append_fixtures script found"
-        ./scripts/append_fixtures.sh $VERSION
+        ./scripts/append_fixtures.sh
       fi
 
     - |
       if [ -f ./scripts/exec_test.sh ]; then
-        ./scripts/exec_test.sh $VERSION
+        ./scripts/exec_test.sh
       fi
 
     # Run data quality tests
-    - tb --semver $VERSION test run -v -c 4
+    - tb test run -v -c 4
 
 .tb_deploy_main:
   stage: cd
@@ -225,9 +225,9 @@ variables:
     # Deploy changes to the main Workspace
     - |
       DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
-      if [ ! -f "$DEPLOY_FILE" ] && [ "$VERSION" != "0.0.0" ]; then
+      if [ ! -f "$DEPLOY_FILE" ]; then
         echo "$DEPLOY_FILE not found, running default tb deploy command"
-        tb --semver ${VERSION} deploy ${CD_FLAGS}
+        tb deploy ${CD_FLAGS}
         tb release ls
       fi
 
