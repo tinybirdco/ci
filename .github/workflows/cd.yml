@@ -70,9 +70,9 @@ jobs:
       - name: Deploy changes to the main Workspace
         run: |
             DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
-            if [ ! -f "$DEPLOY_FILE" ] && [ "$VERSION" != "0.0.0" ]; then
+            if [ ! -f "$DEPLOY_FILE" ]; then
               echo "$DEPLOY_FILE not found, running default tb deploy command"
-              tb --semver ${VERSION} deploy ${CD_FLAGS}
+              tb deploy ${CD_FLAGS}
               tb release ls
             fi
 

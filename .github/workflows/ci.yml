@@ -144,7 +144,7 @@ jobs:
             DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
             if [ ! -f "$DEPLOY_FILE" ]; then
               echo "$DEPLOY_FILE not found, running default tb deploy command"
-              tb --semver ${VERSION} deploy ${CI_FLAGS}
+              tb deploy ${CI_FLAGS}
               tb release ls
             fi
 
@@ -264,18 +264,18 @@ jobs:
         run: |
           if [ -f ./scripts/append_fixtures.sh ]; then
             echo "append_fixtures script found"
-            ./scripts/append_fixtures.sh $VERSION
+            ./scripts/append_fixtures.sh
           fi
 
       - name: Run fixture tests
         run: |
           if [ -f ./scripts/exec_test.sh ]; then
-            ./scripts/exec_test.sh $VERSION
+            ./scripts/exec_test.sh
           fi
 
       - name: Run data quality tests
         run: |
-          tb --semver $VERSION test run -v -c 4
+          tb test run -v -c 4
 
   cleanup:
     runs-on: ubuntu-latest
