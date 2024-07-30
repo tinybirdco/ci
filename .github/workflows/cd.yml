@@ -13,6 +13,10 @@ on:
         required: false
         type: number
         default: 300
+      tb_env:
+        description: "a global environment variable to replace inside the jobs and run conditional workflows (e.g. stagin/production deployments)"
+        required: false
+        type: string
     secrets:
       tb_admin_token:
         required: true
