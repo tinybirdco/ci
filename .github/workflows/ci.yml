@@ -25,7 +25,7 @@ on:
         type: boolean
         default: true
       tb_env:
-        description: "a global environment variable to replace inside the jobs and run conditional workflows (e.g. stagin/production deployments)"
+        description: "a global environment variable to replace inside the jobs and run conditional workflows (e.g. staging/production deployments)"
         required: false
         type: string
     secrets:
