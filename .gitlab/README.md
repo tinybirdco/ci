@@ -10,7 +10,7 @@ A new ENV variable `TB_ADMIN_TOKEN` will be needed in your repository.
 
 It's recommended that you build your CI/CD pipeline based on our [ci_cd.yaml](https://github.com/tinybirdco/ci/blob/main/.gitlab/ci_cd.yml) template file.
 
-If you want to include the provided `ci_cd.yaml` template into your GitLab pipeline you can do next:
+If you want to include the provided `ci_cd.yaml` template into your GitLab pipeline you can include these lines in your `.gitlab_ci.yml` file:
 
 ```yml
 # include latest release, to avoid the dependency you can just copy the jobs and paste them into your GitLab pipeline, it's just tinybird-cli commands and shell script
