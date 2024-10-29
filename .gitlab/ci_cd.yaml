@@ -20,7 +20,7 @@ variables:
 .tb_deploy_ci:
   stage: ci
   image: ${IMAGE_BASE}
-  interruptible: true
+  interruptible: false
   before_script:
     - apt-get update && apt-get install -y --no-install-recommends git
   script:
@@ -191,7 +191,7 @@ variables:
 .tb_deploy_main:
   stage: cd
   image: ${IMAGE_BASE}
-  interruptible: true
+  interruptible: false
   before_script:
     - apt-get update && apt-get install -y --no-install-recommends git
   script:
