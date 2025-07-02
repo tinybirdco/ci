@@ -58,27 +58,22 @@ jobs:
           grep -v '^#' .tinyenv >> $GITHUB_ENV
           echo >> $GITHUB_ENV # Ensures new line at the end of the file
 
-      - name: Install Tinybird CLI
+      - name: Install Tinybird Forward CLI
         run: |
-          if [ -f "requirements.txt" ]; then
-            pip install -r requirements.txt
-          else
-            pip install tinybird-cli
-          fi
+          curl https://tinybird.co | sh
 
       - name: Tinybird version
         run: tb --version
 
-      - name: Check auth
-        run: tb --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} auth info
+      - name: Checks
+        run: tb --cloud --host ${{ secrets.tb_host }} --token ${{ secrets.tb_admin_token }} deploy --check
 
       - name: Deploy changes to the main Workspace
         run: |
             DEPLOY_FILE=./deploy/${VERSION}/deploy.sh
             if [ ! -f "$DEPLOY_FILE" ]; then
               echo "$DEPLOY_FILE not found, running default tb deploy command"
-              tb deploy ${CD_FLAGS}
-              tb release ls
+              tb --cloud --host "${{ secrets.tb_host }}" --token "${{ secrets.tb_admin_token }}" deploy 
             fi
 
       - name: Custom deployment to the main Workspace
