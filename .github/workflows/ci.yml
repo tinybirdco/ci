@@ -162,4 +162,4 @@ jobs:
 
       - name: Run data quality tests
         run: |
-          tb test run -v -c 4
+          tb test run
